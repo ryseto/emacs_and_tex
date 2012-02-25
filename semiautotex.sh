@@ -1,6 +1,9 @@
 #########################################################################
 #### SemiAutoTeX 
-#### Time-stamp: <2012-02-24 12:59:57 seto>
+#### Time-stamp: <2012-02-25 05:36:14 seto>
+#########################################################################
+## You can find some explanations at
+## http://d.hatena.ne.jp/setoryohei/20120219
 #########################################################################
 #!/bin/sh
 if [ $# == 0 -o "$1" == "-h" -o "$1" == "-help"  ]; then
@@ -52,42 +55,40 @@ typset_pass=0
 case "$mode" in
     "tex" ) 
 	if [ -f $texfile.aux ]; then
-	    md5_before=`md5 -q $texfile.aux`
+	    checksum=`md5 -q $texfile.aux`
+	    $LATEX $texfile && typset_pass=1 
+	else
+	    $LATEXDRAFT $texfile && typset_pass=1
 	fi
-	$LATEX $texfile \
-	    && typset_pass=1
 	if [ $typset_pass = 1 ]; then
 	    message="typeset"
-	    md5_after=`md5 -q $texfile.aux`
-	    while [ "$md5_after" != "$md5_before" ]; do
+	    while checksum_before="$checksum" \
+		checksum=`md5 -q $texfile.aux` && \
+		[ "$checksum" != "$checksum_before" ]; do
 		$LATEX $texfile 
-		md5_before=$md5_after
-		md5_after=`md5 -q $texfile.aux`
 		message=`echo "$message + typeset"`
 	    done
 	fi
 	;;
     "bib" )
-	$LATEXDRAFT $texfile \
-	    && typset_pass=1
+	$LATEXDRAFT $texfile && typset_pass=1
 	if [ $typset_pass = 1 ]; then
 	    $BIBTEX $texfile 
 	    $LATEXDRAFT $texfile \
-		&& $LATEX $texfile \		
+		&& $LATEX $texfile
 	    message="typeset + BibTeX + typeset + typeset"
 	fi
 	;;
     "idx" )
-	md5_before=`md5 -q $texfile.aux`
+	checksum=`md5 -q $texfile.aux`
 	$LATEXDRAFT $texfile \
 	    && typset_pass=1
 	if [ $typset_pass = 1 ]; then
 	    message="typeset"
-	    md5_after=`md5 -q $texfile.aux`
-	    while [ "$md5_after" != "$md5_before" ]; do
+	    while checksum_before="$checksum" \
+		checksum=`md5 -q $texfile.aux` && \
+		[ "$checksum" != "$checksum_before" ]; do
 		$LATEXDRAFT $texfile 
-		md5_before=$md5_after
-		md5_after=`md5 -q $texfile.aux`
 		message=`echo "$message + typeset"`
 	    done
 	    $MAKEINDEX $texfile 
@@ -101,8 +102,8 @@ if [ $typset_pass = 1 ]; then
 	$DVIPDF $texfile 
 	message=`echo "$message + DVIPDF"`
     fi
-    echo "semiautotex: $message"
+    echo "SemiAutoTeX: $message"
 else 
-    echo "semiautotex: failed"
+    echo "SemiAutoTeX: failed"
     exit 1
 fi
