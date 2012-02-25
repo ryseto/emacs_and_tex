@@ -1,6 +1,6 @@
 #########################################################################
 #### SemiAutoTeX 
-#### Time-stamp: <2012-02-25 05:36:14 seto>
+#### Time-stamp: <2012-02-25 05:51:49 seto>
 #########################################################################
 ## You can find some explanations at
 ## http://d.hatena.ne.jp/setoryohei/20120219
@@ -62,7 +62,7 @@ case "$mode" in
 	fi
 	if [ $typset_pass = 1 ]; then
 	    message="typeset"
-	    while checksum_before="$checksum" \
+	    while checksum_before="$checksum" && \
 		checksum=`md5 -q $texfile.aux` && \
 		[ "$checksum" != "$checksum_before" ]; do
 		$LATEX $texfile 
@@ -85,7 +85,7 @@ case "$mode" in
 	    && typset_pass=1
 	if [ $typset_pass = 1 ]; then
 	    message="typeset"
-	    while checksum_before="$checksum" \
+	    while checksum_before="$checksum" && \
 		checksum=`md5 -q $texfile.aux` && \
 		[ "$checksum" != "$checksum_before" ]; do
 		$LATEXDRAFT $texfile 
