@@ -1,6 +1,6 @@
 #########################################################################
 #### SemiAutoTeX ver 0.01
-#### Time-stamp: <2012-02-26 11:15:46 seto>
+#### Time-stamp: <2012-02-26 11:27:23 seto>
 #########################################################################
 # You can find some explanations at
 # http://d.hatena.ne.jp/setoryohei/20120219
@@ -11,7 +11,7 @@
 # latexdraft="pdflatex -draftmode"
 # bibtex="bibtex"
 # makeindex="makeindex"
-#
+# dvipdf=""
 #########################################################################
 #!/bin/sh
 if [ $# == 0 -o "$1" == "-h" -o "$1" == "-help"  ]; then
