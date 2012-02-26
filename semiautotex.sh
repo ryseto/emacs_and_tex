@@ -1,6 +1,6 @@
 #########################################################################
 #### SemiAutoTeX ver 0.01
-#### Time-stamp: <2012-02-26 11:27:23 seto>
+#### Time-stamp: <2012-02-26 11:56:56 seto>
 #########################################################################
 # You can find some explanations at
 # http://d.hatena.ne.jp/setoryohei/20120219
@@ -33,35 +33,37 @@ while [ "${1:0:1}" == "-" ]; do
     shift
 done
 
-
-if [ -f ${HOME}/.semiautotexrc ]; then
-    rcfile="${HOME}/.semiautotexrc"
-    DVIPDF=""
-    while read LINE
-    do
-	if [ "${LINE:0:1}" != "#" ]; then
-	    field=`echo ${LINE} | cut -d"=" -f1`
-	    case "$field" in
-		"latex" ) 
-		    LATEX="`echo ${LINE} | cut -d'\"' -f2`";;
-		"latexdraft" )
-		    LATEXDRAFT="`echo ${LINE} | cut -d'\"' -f2`";;
-		"bibtex" )
-		    BIBTEX="`echo ${LINE} | cut -d'\"' -f2`";;
-		"makeindex" )
-		    MAKEINDEX="`echo ${LINE} | cut -d'\"' -f2`";;
-		"dvipdf" )
-		    DVIPDF="`echo ${LINE} | cut -d'\"' -f2`";;
-	    esac
-	fi
-    done <$rcfile
-else
-    LATEX="platex"
-    LATEXDRAFT="platex"
-    BIBTEX="pbibtex"
-    MAKEINDEX="mendex -U"
-    DVIPDF="dvipdfmx"
+rcfile="${HOME}/.semiautotexrc"
+if [ ! -f $rcfile ]; then
+    touch $rcfile
+    echo 'latex="platex"
+latexdraft="platex"
+bibtex="pbibtex"
+makeindex="mendex -U"
+dvipdf="dvipdfmx"' > $rcfile
+    echo "SemiAutoTeX: rc file ($rcfile) is generated."
 fi
+
+DVIPDF=""
+LATEXDRAFT=""
+while read LINE
+do
+    if [ "${LINE:0:1}" != "#" ]; then
+	field=`echo ${LINE} | cut -d"=" -f1`
+	case "$field" in
+	    "latex" ) 
+		LATEX="`echo ${LINE} | cut -d'\"' -f2`";;
+	    "latexdraft" )
+		LATEXDRAFT="`echo ${LINE} | cut -d'\"' -f2`";;
+	    "bibtex" )
+		BIBTEX="`echo ${LINE} | cut -d'\"' -f2`";;
+	    "makeindex" )
+		MAKEINDEX="`echo ${LINE} | cut -d'\"' -f2`";;
+	    "dvipdf" )
+		DVIPDF="`echo ${LINE} | cut -d'\"' -f2`";;
+	esac
+    fi
+done <$rcfile
 
 texfile=`basename $1 .tex`
 typset_pass=0 
