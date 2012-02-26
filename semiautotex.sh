@@ -1,6 +1,6 @@
 #########################################################################
 #### SemiAutoTeX ver 0.01
-#### Time-stamp: <2012-02-26 12:01:26 seto>
+#### Time-stamp: <2012-02-26 12:07:52 seto>
 #########################################################################
 # You can find some explanations at
 # http://d.hatena.ne.jp/setoryohei/20120219
@@ -50,8 +50,7 @@ LATEXDRAFT=""
 while read LINE
 do
     if [ "${LINE:0:1}" != "#" ]; then
-	field=`echo ${LINE} | cut -d"=" -f1`
-	case "$field" in
+	case "`echo ${LINE} | cut -d"=" -f1`" in
 	    "latex" ) 
 		LATEX="`echo ${LINE} | cut -d'\"' -f2`";;
 	    "latexdraft" )
