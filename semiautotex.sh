@@ -1,6 +1,6 @@
 #########################################################################
 #### SemiAutoTeX ver 0.01
-#### Time-stamp: <2012-02-26 11:56:56 seto>
+#### Time-stamp: <2012-02-26 12:01:26 seto>
 #########################################################################
 # You can find some explanations at
 # http://d.hatena.ne.jp/setoryohei/20120219
@@ -46,6 +46,7 @@ fi
 
 DVIPDF=""
 LATEXDRAFT=""
+
 while read LINE
 do
     if [ "${LINE:0:1}" != "#" ]; then
@@ -64,6 +65,10 @@ do
 	esac
     fi
 done <$rcfile
+
+if [ "$LATEXDRAFT" == "" ]; then
+    LATEXDRAFT="$LATEX"
+fi
 
 texfile=`basename $1 .tex`
 typset_pass=0 
