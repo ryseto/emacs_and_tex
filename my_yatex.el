@@ -1,8 +1,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-27 18:28:50 seto>
+;; Time-stamp: <2012-02-27 18:30:29 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; $B%F%9%HHG$N(B YaTeX $B$r;H$&!#(B
+;; テスト版の YaTeX を使う。
 (setq load-path (cons (expand-file-name "~/.emacs.d/yatex") load-path))
 
 (setq auto-mode-alist
@@ -15,7 +15,7 @@
 (autoload 'latex-indent-region-command "~/.emacs.d/lisp/latex-indent"
   "Indent each line in the region according to LaTeX block structure.")
 
-;; $B%9%/%j%W%H(B SemiAutoTeX $B$G%?%$%W%;%C%H(B
+;; スクリプト SemiAutoTeX でタイプセット
 (setq tex-command "semiautotex.sh"
       bibtex-command "semiautotex.sh -b"
       makeindex-command "semiautotex.sh -i"
@@ -26,9 +26,9 @@
       YaTeX-kanji-code nil
       YaTeX-use-AMS-LaTeX t
       YaTeX-default-pop-window-height 7
-      YaTeX-skip-default-reader  t ;; $BJd40F~NO$G%_%K%P%C%U%!$+$iF~NO$7$J$$!#(B
+      YaTeX-skip-default-reader  t ;; 補完入力でミニバッファから入力しない。
       YaTeX-latex-message-code 'utf-8
-      YaTeX::ref-labeling-section-level 3 ;; ref $BJd40$G(B subsection $B$J$I$r8!:w(B
+      YaTeX::ref-labeling-section-level 3 ;; ref 補完で subsection などを検索
       )
 
 (defun skim-forward-search ()
