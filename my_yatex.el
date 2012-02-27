@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-27 18:50:48 seto>
+;; Time-stamp: <2012-02-27 18:56:28 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; テスト版の YaTeX を使う。
@@ -56,8 +56,11 @@
   (interactive)
   (let* ((x (read-string "cleaning up all nonessential files... (y/n):")))
     (if (string= x "y")
-	(process-query-on-exit-flag 
-	 (start-process-shell-command "latexmk clean-up" nil "latexmk -c")))))
+	(progn
+	  (process-query-on-exit-flag 
+	   (start-process-shell-command "latexmk clean-up" nil "latexmk -c"))
+	  (message "latexmk clean-up done"))
+      )))
 
 (defun MyTeX-insert-subscript_rm ()
   (interactive)
