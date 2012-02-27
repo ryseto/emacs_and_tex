@@ -1,11 +1,11 @@
-#########################################################################
-#### SemiAutoTeX ver 0.01
-#### Time-stamp: <2012-02-26 12:07:52 seto>
+################################################################################
+#### SemiAutoTeX ver 0.02
 #########################################################################
 # You can find some explanations at
 # http://d.hatena.ne.jp/setoryohei/20120219
 #
-# The rc file '.semiautotexrc' should be put at your home directory.
+# You can put a rc file '.semiautotexrc' in your home directory.
+# If there is a rc file in current directly, it has the priority.
 # Example of '~/.semiautotexrc'
 # latex="pdflatex -synctex=1"
 # latexdraft="pdflatex -draftmode"
@@ -15,7 +15,7 @@
 #########################################################################
 #!/bin/sh
 if [ $# == 0 -o "$1" == "-h" -o "$1" == "-help"  ]; then
-    echo "SemiAutoTeX 0.01:  Semi-automatic LaTeX document generation routine
+    echo "SemiAutoTeX 0.02:  Semi-automatic LaTeX document generation routine
 Usage: semiautotex [-b] [-i] TEXFILE 
 Options:
 -b          run BibTeX with LaTeX
@@ -33,15 +33,21 @@ while [ "${1:0:1}" == "-" ]; do
     shift
 done
 
-rcfile="${HOME}/.semiautotexrc"
+rcfile=".semiautotexrc"
 if [ ! -f $rcfile ]; then
-    touch $rcfile
-    echo 'latex="platex"
+    rcfile="${HOME}/.semiautotexrc"
+    if [ ! -f $rcfile ]; then
+	touch $rcfile
+	echo '############################################################
+## example of rc file for SemiAutoTeX
+############################################################
+latex="platex"
 latexdraft="platex"
 bibtex="pbibtex"
 makeindex="mendex -U"
 dvipdf="dvipdfmx"' > $rcfile
-    echo "SemiAutoTeX: rc file ($rcfile) is generated."
+	echo "SemiAutoTeX: rc file ($rcfile) is generated."
+    fi
 fi
 
 DVIPDF=""
@@ -77,41 +83,43 @@ case "$mode" in
 	if [ -f $texfile.aux ]; then
 	    checksum=`md5 -q $texfile.aux`
 	    $LATEX $texfile && typset_pass=1 
+	    message="typeset"
 	else
 	    $LATEXDRAFT $texfile && typset_pass=1
+	    message="typeset(d)"
 	fi
 	if [ $typset_pass = 1 ]; then
-	    message="typeset"
 	    while checksum_before="$checksum" && \
 		checksum=`md5 -q $texfile.aux` && \
 		[ "$checksum" != "$checksum_before" ]; do
 		$LATEX $texfile 
-		message=`echo "$message + typeset"`
+		message=`echo "${message}+typeset"`
 	    done
 	fi 
 	;;
     "bib" )
 	$LATEXDRAFT $texfile && typset_pass=1
+	message="typeset(d)"
 	if [ $typset_pass = 1 ]; then
 	    $BIBTEX $texfile 
 	    $LATEXDRAFT $texfile && $LATEX $texfile
-	    message="typeset + BibTeX + typeset + typeset"
+	    message=`echo "${message}+BibTeX+typeset(d)+typeset"`
 	fi
 	;;
     "idx" )
 	checksum=`md5 -q $texfile.aux`
 	$LATEXDRAFT $texfile && typset_pass=1
+	message="typeset(d)"
 	if [ $typset_pass = 1 ]; then
-	    message="typeset"
 	    while checksum_before="$checksum" && \
 		checksum=`md5 -q $texfile.aux` && \
 		[ "$checksum" != "$checksum_before" ]; do
 		$LATEXDRAFT $texfile 
-		message=`echo "$message + typeset"`
+		message=`echo "${message}+typeset(d)"`
 	    done
 	    $MAKEINDEX $texfile 
 	    $LATEX $texfile 
-	    message=`echo "$message + MakeIndex + typeset"`
+	    message=`echo "${message}+MakeIndex+typeset"`
 	fi
 	;;
 esac
@@ -119,7 +127,7 @@ esac
 if [ $typset_pass = 1 ]; then
     if [ "$DVIPDF" != "" ]; then
 	$DVIPDF $texfile 
-	message=`echo "$message + DVIPDF"`
+	message=`echo "${message}+DVIPDF"`
     fi
     echo "SemiAutoTeX: $message"
 else 
