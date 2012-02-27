@@ -1,0 +1,1 @@
+.emacs.d/my_yatex.el
