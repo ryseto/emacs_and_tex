@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-27 21:22:56 seto>
+;; Time-stamp: <2012-02-27 21:29:01 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; テスト版の YaTeX を使う。
@@ -173,5 +173,5 @@
              (url-hexify-string (buffer-substring-no-properties beg end))))))
 
 
-(define-key global-map (kbd "C-c w") 'dictionary)
+(define-key global-map (kbd "C-c w") 'my-mac-dictionary)
 (define-key global-map (kbd "C-c k") 'my-file-complete)
