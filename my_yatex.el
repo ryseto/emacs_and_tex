@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-27 21:50:29 seto>
+;; Time-stamp: <2012-02-27 22:25:19 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -16,7 +16,6 @@
 ;;; C-c k                   : ファイル名の補完
 ;;; C-;                     : スペルチェック
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;;; テスト版の YaTeX を使う。
 (setq load-path (cons (expand-file-name "~/.emacs.d/yatex") load-path))
@@ -112,7 +111,6 @@
     (skip-chars-forward "{")
     )))
 
-
 ;;; ファイル名の補完(広瀬さん)
 ;;; C-c k
 (defun my-file-complete ()
@@ -150,10 +148,10 @@
               end (region-end))
       (save-excursion
         (goto-char pt)
+	(backward-char 1)
         (setq end (progn (forward-word) (point)))
         (setq beg (progn (backward-word) (point)))
         ))
-    
     (browse-url
      (concat "dict:///"
              (url-hexify-string (buffer-substring-no-properties beg end))))))
@@ -161,7 +159,7 @@
 (add-hook 'yatex-mode-hook
           '(lambda ()
 	     (require 'yatexprc)
-	     (turn-off-auto-fill) ; 勝手に改行させない
+	     (turn-off-auto-fill) ; 勝手に改行しない
 	     (define-key YaTeX-mode-map [(s t)] 'YaTeX-typeset-buffer)
 	     (define-key YaTeX-mode-map [(s b)] 'YaTeX-typeset-buffer)
 	     (define-key YaTeX-mode-map [(s p)] 'YaTeX-preview)
