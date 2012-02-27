@@ -1,6 +1,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-27 21:29:01 seto>
+;; Time-stamp: <2012-02-27 21:50:29 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; キーバインド
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; YaTeX のみ
+;;; Cmd-T and Cmd-B         : タイプセット
+;;; Cmd-P and Shift-Cmd-P   : プレビュー
+;;; Shift-Cmd-B             : bibtex 
+;;; Shift-Cmd-I             : makeindex
+;;; C-c s                   : Skim PDF カーソル位置表示
+;;; C-c c                   : latexmk -c を実行
+;;; Cmd-_                   : "_{\mathrm{}}" を挿入
+;;; グローバル
+;;; C-c w                   : OSX の辞書で調べる
+;;; C-c k                   : ファイル名の補完
+;;; C-;                     : スペルチェック
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;;; テスト版の YaTeX を使う。
 (setq load-path (cons (expand-file-name "~/.emacs.d/yatex") load-path))
@@ -73,8 +89,8 @@
 	  (message "latexmk clean-up done"))
       )))
 
-;;; Romanな下付き添え字を書くだけ
-;;; Command-_
+;;; Romanな下付き添え字
+;;; Cmd-_
 (defun MyTeX-insert-subscript_rm ()
   (interactive)
   (insert "_{\\mathrm{}}")
@@ -96,36 +112,6 @@
     (skip-chars-forward "{")
     )))
 
-;;; キーバインド
-;;; Cmd-T and Cmd-B         : タイプセット
-;;; Cmd-P and Shift-Cmd-P   : プレビュー
-;;; Shift-Cmd-B             : bibtex 
-;;; Shift-Cmd-I             : makeindex
-;;; C-c s                   : Skim PDF カーソル位置表示
-;;; C-c c                   : latexmk -c を実行
-
-(add-hook 'yatex-mode-hook
-          '(lambda ()
-	     (require 'yatexprc)
-	     (turn-off-auto-fill) ; 勝手に改行させない
-	     (define-key YaTeX-mode-map [(s t)] 'YaTeX-typeset-buffer)
-	     (define-key YaTeX-mode-map [(s b)] 'YaTeX-typeset-buffer)
-	     (define-key YaTeX-mode-map [(s p)] 'YaTeX-preview)
-	     (define-key YaTeX-mode-map [(s shift p)] 'YaTeX-preview)
-	     (define-key YaTeX-mode-map [(s shift b)]
-	       (lambda 	() (interactive)
-		 (YaTeX-call-builtin-on-file
-		  "BIBTEX" bibtex-command)))
-	     (define-key YaTeX-mode-map [(s shift i)] 
-	       (lambda 	() (interactive)
-		 (YaTeX-call-builtin-on-file
-		  "MAKEINDEX" makeindex-command)))
-	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
-	     (define-key YaTeX-mode-map "\t" 'latex-indent-command)
-	     (define-key YaTeX-mode-map [(s _)] 'MyTeX-insert-subscript_rm)
-	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
-	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
-	     ))
 
 ;;; ファイル名の補完(広瀬さん)
 ;;; C-c k
@@ -151,7 +137,7 @@
 ;;; OSX の辞書で調べる(Sakito さん)
 ;;; http://sakito.jp/mac/dictionary.html
 ;;; C-c w
-(defun my-mac-dictionary ()
+(defun my-osx-dictionary ()
   "dictionary.app"
   (interactive)
   (let ((editable (not buffer-read-only))
@@ -172,6 +158,27 @@
      (concat "dict:///"
              (url-hexify-string (buffer-substring-no-properties beg end))))))
 
+(add-hook 'yatex-mode-hook
+          '(lambda ()
+	     (require 'yatexprc)
+	     (turn-off-auto-fill) ; 勝手に改行させない
+	     (define-key YaTeX-mode-map [(s t)] 'YaTeX-typeset-buffer)
+	     (define-key YaTeX-mode-map [(s b)] 'YaTeX-typeset-buffer)
+	     (define-key YaTeX-mode-map [(s p)] 'YaTeX-preview)
+	     (define-key YaTeX-mode-map [(s shift p)] 'YaTeX-preview)
+	     (define-key YaTeX-mode-map [(s shift b)]
+	       (lambda 	() (interactive)
+		 (YaTeX-call-builtin-on-file "BIBTEX" bibtex-command)))
+	     (define-key YaTeX-mode-map [(s shift i)] 
+	       (lambda 	() (interactive)
+		 (YaTeX-call-builtin-on-file "MAKEINDEX" makeindex-command)))
+	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
+	     (define-key YaTeX-mode-map "\t" 'latex-indent-command)
+	     (define-key YaTeX-mode-map [(s _)] 'MyTeX-insert-subscript_rm)
+	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
+	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
+	     ))
 
-(define-key global-map (kbd "C-c w") 'my-mac-dictionary)
+(define-key global-map (kbd "C-c w") 'my-osx-dictionary)
 (define-key global-map (kbd "C-c k") 'my-file-complete)
+(define-key global-map (kbd "C-;") 'ispell-word)
