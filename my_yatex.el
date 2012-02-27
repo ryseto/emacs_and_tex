@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-27 18:30:29 seto>
+;; Time-stamp: <2012-02-27 18:50:48 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; テスト版の YaTeX を使う。
@@ -19,13 +19,13 @@
 (setq tex-command "semiautotex.sh"
       bibtex-command "semiautotex.sh -b"
       makeindex-command "semiautotex.sh -i"
-      YaTeX-typeset-auto-rerun nil ;; for 1.75.xx 
+      YaTeX-typeset-auto-rerun nil ;; for 1.75.xx rerun 機能を無効
       dvi2-command "open -a Skim")
 
-(setq YaTeX-inhibit-prefix-letter t ;; C-c C-.... 
+(setq YaTeX-inhibit-prefix-letter t ;; C-c C- .... 
       YaTeX-kanji-code nil
       YaTeX-use-AMS-LaTeX t
-      YaTeX-default-pop-window-height 7
+      YaTeX-default-pop-window-height 7 ;; タイプセットの時のウィンドウの高さ
       YaTeX-skip-default-reader  t ;; 補完入力でミニバッファから入力しない。
       YaTeX-latex-message-code 'utf-8
       YaTeX::ref-labeling-section-level 3 ;; ref 補完で subsection などを検索
@@ -54,9 +54,10 @@
 
 (defun MyTeX-latexmk-cleanup ()
   (interactive)
-  (message "cleaning up all nonessential files...")
-  (process-query-on-exit-flag 
-   (start-process-shell-command "latexmk clean-up" nil "latexmk -c")))
+  (let* ((x (read-string "cleaning up all nonessential files... (y/n):")))
+    (if (string= x "y")
+	(process-query-on-exit-flag 
+	 (start-process-shell-command "latexmk clean-up" nil "latexmk -c")))))
 
 (defun MyTeX-insert-subscript_rm ()
   (interactive)
@@ -93,12 +94,9 @@
 	       (lambda 	() (interactive)
 		 (YaTeX-call-builtin-on-file
 		  "MAKEINDEX" makeindex-command)))
-	     (define-key YaTeX-mode-map [(kbd "C-c l")]
-					 'texlabel-auto-labeling-default)
 	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
-	     (local-set-key "\t" 'latex-indent-command)
-	     (local-set-key [(s _)] 'MyTeX-insert-subscript_rm)
-	     (local-set-key [(control \])] 'MyTeX-jump-to-next)
+	     (define-key YaTeX-mode-map "\t" 'latex-indent-command)
+	     (define-key YaTeX-mode-map [(s _)] 'MyTeX-insert-subscript_rm)
+	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
 	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
-	     ;;(kill-local-variable 'mac-ignore-shortcut)
 	     ))
