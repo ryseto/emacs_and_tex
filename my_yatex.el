@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-28 14:41:26 seto>
+;; Time-stamp: <2012-02-28 22:11:26 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -53,6 +53,15 @@
       YaTeX-latex-message-code 'utf-8
       YaTeX::ref-labeling-section-level 3 ; ref 補完で subsection などを検索
       )
+
+(setq yatex-mode-load-hook
+      '(lambda() 
+	 (YaTeX-define-begend-key "be" "equation")
+	 (YaTeX-define-begend-key "bE" "enumerate")
+	 (YaTeX-define-begend-key "ba" "align")
+	 (YaTeX-define-begend-key "bg" "gather")
+	 (YaTeX-define-begend-key "bf" "figure")
+	 ))
 
 ;;; Skim PDF カーソル位置表示
 (defun skim-forward-search ()
