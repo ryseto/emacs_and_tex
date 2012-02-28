@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-27 22:25:19 seto>
+;; Time-stamp: <2012-02-28 11:24:33 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -27,12 +27,12 @@
                 ("\\.sty$" . yatex-mode)
                 ("\\.clo$" . yatex-mode)
                 ("\\.bbl$" . yatex-mode)) auto-mode-alist))
-(autoload 'latex-indent-command "~/.emacs.d/lisp/latex-indent"
-  "Indent current line accroding to LaTeX block structure.")
 
 ;;; インデント
 ;;; (YaTeXのインデントを使わない）
 ;;; http://www.hit.ac.jp/~wachi/misc/latexindent.html
+(autoload 'latex-indent-command "~/.emacs.d/lisp/latex-indent"
+  "Indent current line accroding to LaTeX block structure.")
 (autoload 'latex-indent-region-command "~/.emacs.d/lisp/latex-indent"
   "Indent each line in the region according to LaTeX block structure.")
 
