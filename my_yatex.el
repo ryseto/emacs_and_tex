@@ -1,17 +1,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-28 11:24:33 seto>
+;; Time-stamp: <2012-02-28 13:26:24 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; YaTeX のみ
+;;; === YaTeX ===
 ;;; Cmd-T and Cmd-B         : タイプセット
 ;;; Cmd-P and Shift-Cmd-P   : プレビュー
-;;; Shift-Cmd-B             : bibtex 
+;;; Shift-Cmd-B             : bibtex
 ;;; Shift-Cmd-I             : makeindex
+;;; Tab                     : インデント (latex-indent)
+;;; C-c Tab                 : 領域をインデント (latex-indent)
 ;;; C-c s                   : Skim PDF カーソル位置表示
 ;;; C-c c                   : latexmk -c を実行
 ;;; Cmd-_                   : "_{\mathrm{}}" を挿入
-;;; グローバル
+;;; === グローバル ===
 ;;; C-c w                   : OSX の辞書で調べる
 ;;; C-c k                   : ファイル名の補完
 ;;; C-;                     : スペルチェック
@@ -36,16 +37,17 @@
 (autoload 'latex-indent-region-command "~/.emacs.d/lisp/latex-indent"
   "Indent each line in the region according to LaTeX block structure.")
 
-;;; スクリプト SemiAutoTeX でタイプセット
+;;; シェルスクリプト SemiAutoTeX でタイプセット
+;;; https://github.com/ryseto/emacs_and_tex/blob/master/semiautotex.sh
 (setq tex-command "semiautotex.sh"
       bibtex-command "semiautotex.sh -b"
       makeindex-command "semiautotex.sh -i"
-      YaTeX-typeset-auto-rerun nil ; for 1.75.xx rerun 機能を無効
+      YaTeX-typeset-auto-rerun nil ; rerun 機能を無効 (1.75.x 以降)
       dvi2-command "open -a Skim")
 
 (setq YaTeX-inhibit-prefix-letter t ; C-c C- .... 
       YaTeX-kanji-code nil
-      YaTeX-use-AMS-LaTeX t
+      YaTeX-use-AMS-LaTeX t ; amsmath を利用
       YaTeX-default-pop-window-height 7 ; タイプセットの時のウィンドウの高さ
       YaTeX-skip-default-reader  t ; 補完入力でミニバッファから入力しない。
       YaTeX-latex-message-code 'utf-8
@@ -53,7 +55,6 @@
       )
 
 ;;; Skim PDF カーソル位置表示
-;;; C-c s
 (defun skim-forward-search ()
   (interactive)
   (let* ((ctf (buffer-name))
@@ -76,7 +77,6 @@
      (start-process-shell-command "displayline" nil cmd args))))
 
 ;;; latexmk -c を実行（TeX の不用なファイルを削除）
-;;; C-c d
 (defun MyTeX-latexmk-cleanup ()
   (interactive)
   (let* ((yn))
@@ -89,14 +89,12 @@
       )))
 
 ;;; Romanな下付き添え字
-;;; Cmd-_
 (defun MyTeX-insert-subscript_rm ()
   (interactive)
   (insert "_{\\mathrm{}}")
   (backward-char 2))
 
 ;;; 少しだけスキップ
-;;; C-c j
 (defun MyTeX-jump-to-next ()
   (interactive)
   (cond
@@ -112,7 +110,6 @@
     )))
 
 ;;; ファイル名の補完(広瀬さん)
-;;; C-c k
 (defun my-file-complete ()
   (interactive)
   (let*((p (point))
@@ -134,7 +131,6 @@
 
 ;;; OSX の辞書で調べる(Sakito さん)
 ;;; http://sakito.jp/mac/dictionary.html
-;;; C-c w
 (defun my-osx-dictionary ()
   "dictionary.app"
   (interactive)
@@ -170,11 +166,12 @@
 	     (define-key YaTeX-mode-map [(s shift i)] 
 	       (lambda 	() (interactive)
 		 (YaTeX-call-builtin-on-file "MAKEINDEX" makeindex-command)))
-	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
 	     (define-key YaTeX-mode-map "\t" 'latex-indent-command)
+	     (define-key YaTeX-mode-map (kbd "C-c TAB") 'latex-indent-region-command)
 	     (define-key YaTeX-mode-map [(s _)] 'MyTeX-insert-subscript_rm)
-	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
+	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
 	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
+	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
 	     ))
 
 (define-key global-map (kbd "C-c w") 'my-osx-dictionary)
