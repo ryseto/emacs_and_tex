@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-29 06:36:17 seto>
+;; Time-stamp: <2012-02-29 10:38:37 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -187,19 +187,25 @@
 (define-key global-map (kbd "C-c k") 'my-file-complete)
 (define-key global-map (kbd "C-;") 'ispell-word)
 
-;;;; 実験中
-(defun MyTeX-load-texconfig ()
-"TeX ファイルがあるディレクトリに texconfig というファイルを用意して
-そこで (setq YaTeX-parent-file メインファイル) と書いておく。
-TeX ファイルを開いた時にそれをロードしてメインファイルを設定する。
-(find-file-noselect ファイル) などを書いておけば他のファイルも一括で開く事ができる"
+;;;; TeX ファイルを一括で開き YaTeX-parent-file を設定する
+;;; TeX ファイルのディレクトリ内に mytexconfig というファイルを用意し、
+;;; MyTeX-file-list にファイル名を連ねる。
+;;;  (setq MyTeX-file-list
+;;;      '("foo_main.tex" "foo_included_1.tex" "foo_included_2.tex" ))
+;;; TeX ファイルを開く時にこのリストの先頭にあるファイルを YaTeX-parent-file として
+;;; 他の全てのファイルも同時にバッファに開く。
+
+(defun MyTeX-initial-setup ()
   (interactive)
-  (if (file-exists-p "./texconfig")
+  (if (file-exists-p "mytexconfig")
       (progn
-	(load-file "./texconfig")
-	(message "loaded texconfig")
+	(load-file "mytexconfig")
+	(dolist (file MyTeX-file-list)
+	  (find-file-noselect file))
+	(setq YaTeX-parent-file (car MyTeX-file-list))
+	(message "MyTeX: initial setup done.")
 	)))
 
 (add-hook 'yatex-mode-hook
       '(lambda()
-	 (MyTeX-load-texconfig)))
+	 (MyTeX-initial-setup)))
