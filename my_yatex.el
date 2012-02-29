@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-28 22:11:26 seto>
+;; Time-stamp: <2012-02-29 06:36:17 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -186,3 +186,20 @@
 (define-key global-map (kbd "C-c w") 'my-osx-dictionary)
 (define-key global-map (kbd "C-c k") 'my-file-complete)
 (define-key global-map (kbd "C-;") 'ispell-word)
+
+;;;; 実験中
+(defun MyTeX-load-texconfig ()
+"TeX ファイルがあるディレクトリに texconfig というファイルを用意して
+そこで (setq YaTeX-parent-file メインファイル) と書いておく。
+TeX ファイルを開いた時にそれをロードしてメインファイルを設定する。
+(find-file-noselect ファイル) などを書いておけば他のファイルも一括で開く事ができる"
+  (interactive)
+  (if (file-exists-p "./texconfig")
+      (progn
+	(load-file "./texconfig")
+	(message "loaded texconfig")
+	)))
+
+(add-hook 'yatex-mode-hook
+      '(lambda()
+	 (MyTeX-load-texconfig)))
