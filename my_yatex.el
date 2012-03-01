@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-01 13:56:00 seto>
+;; Time-stamp: <2012-03-01 14:09:48 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -163,10 +163,6 @@
      (concat "dict:///"
              (url-hexify-string (buffer-substring-no-properties beg end))))))
 
-(defun MyTeX-switch-to-mainfile ()
-  (interactive)
-  (switch-to-buffer YaTeX-parent-file))
-
 (defun MyTeX-switch-to-previous ()
   (interactive)
   (switch-to-buffer nil))
@@ -191,7 +187,7 @@
 	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
 	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
 	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
-	     (define-key YaTeX-mode-map [(s \1)] 'MyTeX-switch-to-mainfile)
+	     (define-key YaTeX-mode-map [(s \1)] 'YaTeX-visit-main)
 	     (define-key YaTeX-mode-map [(s \2)] 'MyTeX-switch-to-previous)
 	     ))
 
