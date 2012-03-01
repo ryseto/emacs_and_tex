@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-02-29 10:38:37 seto>
+;; Time-stamp: <2012-03-01 13:56:00 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -7,6 +7,8 @@
 ;;; Cmd-P and Shift-Cmd-P   : プレビュー
 ;;; Shift-Cmd-B             : bibtex
 ;;; Shift-Cmd-I             : makeindex
+;;; Cmd-1                   : メインファイルのバッファを開く
+;;; Cmd-2                   : 1つ前のバッファを開く
 ;;; Tab                     : インデント (latex-indent)
 ;;; C-c Tab                 : 領域をインデント (latex-indent)
 ;;; C-c s                   : Skim PDF カーソル位置表示
@@ -161,6 +163,14 @@
      (concat "dict:///"
              (url-hexify-string (buffer-substring-no-properties beg end))))))
 
+(defun MyTeX-switch-to-mainfile ()
+  (interactive)
+  (switch-to-buffer YaTeX-parent-file))
+
+(defun MyTeX-switch-to-previous ()
+  (interactive)
+  (switch-to-buffer nil))
+
 (add-hook 'yatex-mode-hook
           '(lambda ()
 	     (require 'yatexprc)
@@ -181,6 +191,8 @@
 	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
 	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
 	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
+	     (define-key YaTeX-mode-map [(s \1)] 'MyTeX-switch-to-mainfile)
+	     (define-key YaTeX-mode-map [(s \2)] 'MyTeX-switch-to-previous)
 	     ))
 
 (define-key global-map (kbd "C-c w") 'my-osx-dictionary)
@@ -209,3 +221,4 @@
 (add-hook 'yatex-mode-hook
       '(lambda()
 	 (MyTeX-initial-setup)))
+
