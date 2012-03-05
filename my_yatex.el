@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-01 14:09:48 seto>
+;; Time-stamp: <2012-03-05 09:35:04 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -20,7 +20,7 @@
 ;;; C-;                     : スペルチェック
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; テスト版の YaTeX を使う。
+;;; テスト版の YaTeX を使っているのでそちらが優先してロードされるようにする
 (setq load-path (cons (expand-file-name "~/.emacs.d/yatex") load-path))
 (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
 (setq auto-mode-alist
@@ -31,8 +31,7 @@
                 ("\\.clo$" . yatex-mode)
                 ("\\.bbl$" . yatex-mode)) auto-mode-alist))
 
-;;; インデント
-;;; (YaTeXのインデントを使わない）
+;;; インデント (YaTeXのインデントを使わない）
 ;;; http://www.hit.ac.jp/~wachi/misc/latexindent.html
 (autoload 'latex-indent-command "~/.emacs.d/lisp/latex-indent"
   "Indent current line accroding to LaTeX block structure.")
@@ -45,17 +44,20 @@
       bibtex-command "semiautotex.sh -b"
       makeindex-command "semiautotex.sh -i"
       YaTeX-typeset-auto-rerun nil ; rerun 機能を無効 (1.75.x 以降)
-      dvi2-command "open -a Skim")
+      dvi2-command "open -a Skim" ; PDF プレビュアとして Skim.app を使う
+      )
 
-(setq YaTeX-inhibit-prefix-letter t ; C-c C- .... 
-      YaTeX-kanji-code nil
+(setq YaTeX-inhibit-prefix-letter t ; C-c C- ....
+      YaTeX-kanji-code nil ; 文字コードを変更しない
       YaTeX-use-AMS-LaTeX t ; amsmath を利用
       YaTeX-default-pop-window-height 7 ; タイプセットの時のウィンドウの高さ
-      YaTeX-skip-default-reader  t ; 補完入力でミニバッファから入力しない。
+      YaTeX-skip-default-reader  t ; 補完入力でミニバッファから入力しない
       YaTeX-latex-message-code 'utf-8
+      YaTeX-template-file "~/Documents/Dropbox/template/template.tex" ; 新規作成時のテンプレート
       YaTeX::ref-labeling-section-level 3 ; ref 補完で subsection などを検索
       )
 
+;;; begin型、C-b 1文字のカスタマイズ
 (setq yatex-mode-load-hook
       '(lambda() 
 	 (YaTeX-define-begend-key "be" "equation")
@@ -217,4 +219,3 @@
 (add-hook 'yatex-mode-hook
       '(lambda()
 	 (MyTeX-initial-setup)))
-
