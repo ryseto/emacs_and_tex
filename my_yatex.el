@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-05 09:35:04 seto>
+;; Time-stamp: <2012-03-06 14:31:04 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -165,10 +165,12 @@
      (concat "dict:///"
              (url-hexify-string (buffer-substring-no-properties beg end))))))
 
-(defun MyTeX-switch-to-previous ()
+;;; 1つ前の buffer に切り替える
+(defun MyTeX-switch-to-previousbuffer ()
   (interactive)
   (switch-to-buffer nil))
 
+;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
           '(lambda ()
 	     (require 'yatexprc)
@@ -190,7 +192,7 @@
 	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
 	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
 	     (define-key YaTeX-mode-map [(s \1)] 'YaTeX-visit-main)
-	     (define-key YaTeX-mode-map [(s \2)] 'MyTeX-switch-to-previous)
+	     (define-key YaTeX-mode-map [(s \2)] 'MyTeX-switch-to-previousbuffer)
 	     ))
 
 (define-key global-map (kbd "C-c w") 'my-osx-dictionary)
