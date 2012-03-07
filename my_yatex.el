@@ -1,17 +1,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-06 14:31:04 seto>
+;; Time-stamp: <2012-03-07 09:11:54 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
 ;;; Cmd-T and Cmd-B         : タイプセット
-;;; Cmd-P and Shift-Cmd-P   : プレビュー
+;;; Shift-Cmd-P             : プレビュー
+;;; Shift-Cmd-R, C-c s      : Skim PDF カーソル位置表示
 ;;; Shift-Cmd-B             : bibtex
 ;;; Shift-Cmd-I             : makeindex
 ;;; Cmd-1                   : メインファイルのバッファを開く
 ;;; Cmd-2                   : 1つ前のバッファを開く
 ;;; Tab                     : インデント (latex-indent)
 ;;; C-c Tab                 : 領域をインデント (latex-indent)
-;;; C-c s                   : Skim PDF カーソル位置表示
 ;;; C-c d                   : latexmk -c を実行
 ;;; Cmd-_                   : "_{\mathrm{}}" を挿入
 ;;; === グローバル ===
@@ -20,7 +20,8 @@
 ;;; C-;                     : スペルチェック
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; テスト版の YaTeX を使っているのでそちらが優先してロードされるようにする
+;;; テスト版の YaTeX を使っているのでそちらが優先してロードされるようにする。
+;;; 現在 1.75.3 を使用中。
 (setq load-path (cons (expand-file-name "~/.emacs.d/yatex") load-path))
 (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
 (setq auto-mode-alist
@@ -67,7 +68,9 @@
 	 (YaTeX-define-begend-key "bf" "figure")
 	 ))
 
-;;; Skim PDF カーソル位置表示
+;;;; Skim PDF カーソル位置表示
+;;; pdflatex/platex -synctex=1 
+;;; Emacs から Skim へ C-c 
 (defun skim-forward-search ()
   (interactive)
   (let* ((ctf (buffer-name))
@@ -170,29 +173,40 @@
   (interactive)
   (switch-to-buffer nil))
 
+(defun MyTeX-null ()
+  (interactive)
+  (message "MyTeX-null is called"))
+
+
+;;; クラッシュするキーバインドを無効にする。
+(define-key global-map [?\s-p] nil) ; ns-print-buffer
+(define-key global-map [?\s-S] nil) ; ns-write-file-using-panel
+
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
           '(lambda ()
 	     (require 'yatexprc)
 	     (turn-off-auto-fill) ; 勝手に改行しない
-	     (define-key YaTeX-mode-map [(s t)] 'YaTeX-typeset-buffer)
-	     (define-key YaTeX-mode-map [(s b)] 'YaTeX-typeset-buffer)
-	     (define-key YaTeX-mode-map [(s p)] 'YaTeX-preview)
-	     (define-key YaTeX-mode-map [(s shift p)] 'YaTeX-preview)
-	     (define-key YaTeX-mode-map [(s shift b)]
+	     (define-key YaTeX-mode-map [?\s-t] 'YaTeX-typeset-buffer)
+	     (define-key YaTeX-mode-map [?\s-b] 'YaTeX-typeset-buffer)
+	     (define-key YaTeX-mode-map [?\s-P] 'YaTeX-preview)
+	     (define-key YaTeX-mode-map [?\s-R] 'skim-forward-search)
+	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
+
+	     (define-key YaTeX-mode-map [?\s-B] 
 	       (lambda 	() (interactive)
 		 (YaTeX-call-builtin-on-file "BIBTEX" bibtex-command)))
-	     (define-key YaTeX-mode-map [(s shift i)] 
+	     (define-key YaTeX-mode-map [?\s-I]
 	       (lambda 	() (interactive)
 		 (YaTeX-call-builtin-on-file "MAKEINDEX" makeindex-command)))
 	     (define-key YaTeX-mode-map "\t" 'latex-indent-command)
 	     (define-key YaTeX-mode-map (kbd "C-c TAB") 'latex-indent-region-command)
-	     (define-key YaTeX-mode-map [(s _)] 'MyTeX-insert-subscript_rm)
-	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
+	     (define-key YaTeX-mode-map [?\s-_] 'MyTeX-insert-subscript_rm)
+
 	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
 	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
-	     (define-key YaTeX-mode-map [(s \1)] 'YaTeX-visit-main)
-	     (define-key YaTeX-mode-map [(s \2)] 'MyTeX-switch-to-previousbuffer)
+	     (define-key YaTeX-mode-map [?\s-1] 'YaTeX-visit-main)
+	     (define-key YaTeX-mode-map [?\s-2] 'MyTeX-switch-to-previousbuffer)
 	     ))
 
 (define-key global-map (kbd "C-c w") 'my-osx-dictionary)

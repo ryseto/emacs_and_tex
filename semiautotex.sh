@@ -41,7 +41,7 @@ if [ ! -f $rcfile ]; then
 	echo '############################################################
 ## example of rc file for SemiAutoTeX
 ############################################################
-latex="platex"
+latex="platex -synctex=1"
 latexdraft="platex"
 bibtex="pbibtex"
 makeindex="mendex -U"
