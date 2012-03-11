@@ -1,11 +1,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-11 10:23:23 seto>
+;; Time-stamp: <2012-03-11 10:32:45 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
 ;;; Cmd-t, Cmd-b            : タイプセット
 ;;; Cmd-P                   : プレビュー
-;;; Cmd-", Cmd-R, C-c s     : Skim PDF カーソル位置表示
+;;; Cmd-R, C-c s            : Skim PDF カーソル位置表示
 ;;; Cmd-B                   : bibtex
 ;;; Cmd-I                   : makeindex
 ;;; Cmd-1                   : メインファイルのバッファを開く
@@ -200,7 +200,6 @@
 	     (define-key YaTeX-mode-map [?\s-b] 'YaTeX-typeset-buffer)
 	     (define-key YaTeX-mode-map [?\s-P] 'YaTeX-preview)
 	     (define-key YaTeX-mode-map [?\s-R] 'skim-forward-search)
-	     (define-key YaTeX-mode-map [?\s-\"] 'skim-forward-search)
 	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
 	     (define-key YaTeX-mode-map [?\s-B] 
 	       (lambda 	() (interactive)
