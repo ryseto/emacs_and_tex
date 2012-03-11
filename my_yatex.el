@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-11 07:30:24 seto>
+;; Time-stamp: <2012-03-11 10:20:38 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -18,6 +18,7 @@
 ;;; C-c w                   : OSX の辞書で調べる
 ;;; C-c k                   : ファイル名の補完
 ;;; C-;                     : スペルチェック
+;;; Cmd-O                   : ファイルのあるフォルダを Finder で開く
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; テスト版の YaTeX を使っているのでそちらが優先してロードされるようにする。
@@ -110,6 +111,11 @@
   (insert "_{\\mathrm{}}")
   (backward-char 2))
 
+;;; 1つ前の buffer に切り替える
+(defun MyTeX-switch-to-previousbuffer ()
+  (interactive)
+  (switch-to-buffer nil))
+
 ;;; 少しだけスキップ
 (defun MyTeX-jump-to-next ()
   (interactive)
@@ -126,7 +132,7 @@
     )))
 
 ;;; ファイル名の補完(広瀬さん)
-(defun my-file-complete ()
+(defun My-file-complete ()
   (interactive)
   (let*((p (point))
 	(s (save-excursion
@@ -147,7 +153,7 @@
 
 ;;; OSX の辞書で調べる(Sakito さん)
 ;;; http://sakito.jp/mac/dictionary.html
-(defun my-osx-dictionary ()
+(defun My-osx-dictionary ()
   "dictionary.app"
   (interactive)
   (let ((editable (not buffer-read-only))
@@ -168,14 +174,16 @@
      (concat "dict:///"
              (url-hexify-string (buffer-substring-no-properties beg end))))))
 
-;;; 1つ前の buffer に切り替える
-(defun MyTeX-switch-to-previousbuffer ()
+;;; ファイルのあるフォルダを Finder で開く
+(defun My-show-in-finder ()
   (interactive)
-  (switch-to-buffer nil))
+  (process-query-on-exit-flag 
+   (start-process-shell-command "Show in Finder" nil "open .")))
 
 ;;; クラッシュするキーバインドを無効にする。
 (define-key global-map [?\s-p] nil) ; ns-print-buffer
 (define-key global-map [?\s-S] nil) ; ns-write-file-using-panel
+(define-key global-map [?\s-o] nil) ; ns-open-file-using-panel
 
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
@@ -204,9 +212,10 @@
 	     (define-key YaTeX-mode-map [?\s-2] 'MyTeX-switch-to-previousbuffer)
 	     ))
 
-(define-key global-map (kbd "C-c w") 'my-osx-dictionary)
-(define-key global-map (kbd "C-c k") 'my-file-complete)
+(define-key global-map (kbd "C-c w") 'My-osx-dictionary)
+(define-key global-map (kbd "C-c k") 'My-file-complete)
 (define-key global-map (kbd "C-;") 'ispell-word)
+(define-key global-map [?\s-O] 'My-show-in-finder)
 
 ;;;; TeX ファイルを一括で開き YaTeX-parent-file を設定する
 ;;; TeX ファイルのディレクトリ内に mytexconfig というファイルを用意し、
@@ -218,7 +227,6 @@
 ;;; (YaTeX 標準の機能でも、C-c C-d に割り当てられている
 ;;; YaTeX-display-hierarchy を実行すると input/include されているファイルの
 ;;; 一覧が見れると同時にそれらを一括で開くことができる。)
-
 
 (defun MyTeX-initial-setup ()
   (interactive)
