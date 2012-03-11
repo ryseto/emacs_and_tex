@@ -1,18 +1,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-11 18:50:47 seto>
+;; Time-stamp: <2012-03-11 21:14:58 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
-;;; command + T / command + B      : タイプセット
+;;; command + T, command + B       : タイプセット
 ;;; shift + command + P            : プレビュー
-;;; shift + command R / C-c s      : Skim PDF カーソル位置表示
+;;; shift + command R, C-c s       : Skim PDF カーソル位置表示
 ;;; shift + command + B            : bibtex
 ;;; shift + command + I            : makeindex
 ;;; command + 1                    : メインファイルのバッファを開く
 ;;; command + 2                    : 1つ前のバッファを開く
 ;;; Tab                            : インデント (latex-indent)
-;;; C-c + Tab                      : 領域をインデント (latex-indent)
-;;; C-c + d                        : latexmk -c を実行
+;;; C-c Tab                        : 領域をインデント (latex-indent)
+;;; C-c d                          : latexmk -c を実行
 ;;; command + "_"                  : "_{\mathrm{}}" を挿入
 ;;; === グローバル ===
 ;;; C-c w                          : OSX の辞書で調べる
@@ -49,8 +49,8 @@
       YaTeX-typeset-auto-rerun nil ; rerun 機能を無効 (1.75.x 以降)
       dvi2-command "open -a Skim" ; PDF プレビュアとして Skim.app を使う
       )
-
-(setq YaTeX-inhibit-prefix-letter t ; C-c C- ....
+;;; YaTeX カスタマイズ変数
+(setq YaTeX-inhibit-prefix-letter t ; YaTeXキーバインドを C-c ? から C-c C-? に変更
       YaTeX-kanji-code nil ; 文字コードを変更しない
       YaTeX-use-AMS-LaTeX t ; amsmath を利用
       YaTeX-default-pop-window-height 7 ; タイプセットの時のウィンドウの高さ
@@ -60,19 +60,20 @@
       YaTeX::ref-labeling-section-level 3 ; ref 補完で subsection などを検索
       )
 
-;;; begin型、C-b 1文字のカスタマイズ
+;;; begin型「C-c C-b 1文字」補完のカスタマイズ
 (setq yatex-mode-load-hook
       '(lambda() 
-	 (YaTeX-define-begend-key "be" "equation")
-	 (YaTeX-define-begend-key "bE" "enumerate")
+	 (YaTeX-define-begend-key "be" "equation") ; デフォルトは enumerate
+	 (YaTeX-define-begend-key "bE" "enumerate") ; デフォルトは equation
 	 (YaTeX-define-begend-key "ba" "align")
 	 (YaTeX-define-begend-key "bg" "gather")
 	 (YaTeX-define-begend-key "bf" "figure")
 	 ))
 
 ;;;; Skim PDF カーソル位置表示
-;;; pdflatex/platex -synctex=1 
-;;; Emacs から Skim へ C-c 
+;;; Emacs から Skim へ
+;;; この機能を使うためには、
+;;; pdflatex/platex にオプション -synctex=1 が必要
 (defun skim-forward-search ()
   (interactive)
   (let* ((ctf (buffer-name))
@@ -106,7 +107,7 @@
 	  (message "latexmk clean-up done"))
       )))
 
-;;; Romanな下付き添え字
+;;; ローマン体の下付き添え字
 (defun MyTeX-insert-subscript_rm ()
   (interactive)
   (insert "_{\\mathrm{}}")
@@ -225,7 +226,6 @@
 	     (define-key YaTeX-mode-map [?\s-2] 'MyTeX-switch-to-previousbuffer)
 	     ))
 
-
 ;;;; TeX ファイルを一括で開き YaTeX-parent-file を設定する
 ;;; TeX ファイルのディレクトリ内に mytexconfig というファイルを用意し、
 ;;; MyTeX-file-list にファイル名を連ねる。
@@ -236,7 +236,6 @@
 ;;; (YaTeX 標準の機能でも、C-c C-d に割り当てられている
 ;;; YaTeX-display-hierarchy を実行すると input/include されているファイルの
 ;;; 一覧が見れると同時にそれらを一括で開くことができる。)
-
 (defun MyTeX-initial-setup ()
   (interactive)
   (if (file-exists-p "mytexconfig")
@@ -247,7 +246,7 @@
 	(setq YaTeX-parent-file (car MyTeX-file-list))
 	(message "MyTeX: initial setup done.")
 	)))
-
+;;; YaTeX 起動時に MyTeX-initial-setup を実行
 (add-hook 'yatex-mode-hook
       '(lambda()
 	 (MyTeX-initial-setup)))
