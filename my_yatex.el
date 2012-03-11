@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-11 10:32:45 seto>
+;; Time-stamp: <2012-03-11 18:29:38 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -18,7 +18,7 @@
 ;;; C-c w                   : OSX の辞書で調べる
 ;;; C-c k                   : ファイル名の補完
 ;;; C-;                     : スペルチェック
-;;; Cmd-O                   : ファイルのあるフォルダを Finder で開く
+;;; Cmd-O                   : Finder に表示
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; テスト版の YaTeX を使っているのでそちらが優先してロードされるようにする。
@@ -174,11 +174,17 @@
      (concat "dict:///"
              (url-hexify-string (buffer-substring-no-properties beg end))))))
 
-;;; ファイルのあるフォルダを Finder で開く
+;;; Finder に表示
 (defun MyTool-show-in-finder ()
   (interactive)
+  (process-kill-without-query
+   (start-process-shell-command "Show in Finder" nil "open -R" (buffer-file-name))))
+
+;;; Finder でフォルダを開く
+(defun MyTool-open-folder-in-finder ()
+  (interactive)
   (process-query-on-exit-flag 
-   (start-process-shell-command "Show in Finder" nil "open .")))
+   (start-process-shell-command "open folder in Finder" nil "open .")))
 
 ;;; クラッシュするキーバインドを無効にする。
 (define-key global-map [?\s-p] nil) ; ns-print-buffer
