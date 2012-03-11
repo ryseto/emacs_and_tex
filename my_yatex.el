@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-11 10:20:38 seto>
+;; Time-stamp: <2012-03-11 10:23:23 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -132,7 +132,7 @@
     )))
 
 ;;; ファイル名の補完(広瀬さん)
-(defun My-file-complete ()
+(defun MyTool-file-complete ()
   (interactive)
   (let*((p (point))
 	(s (save-excursion
@@ -153,7 +153,7 @@
 
 ;;; OSX の辞書で調べる(Sakito さん)
 ;;; http://sakito.jp/mac/dictionary.html
-(defun My-osx-dictionary ()
+(defun MyTool-osx-dictionary ()
   "dictionary.app"
   (interactive)
   (let ((editable (not buffer-read-only))
@@ -175,7 +175,7 @@
              (url-hexify-string (buffer-substring-no-properties beg end))))))
 
 ;;; ファイルのあるフォルダを Finder で開く
-(defun My-show-in-finder ()
+(defun MyTool-show-in-finder ()
   (interactive)
   (process-query-on-exit-flag 
    (start-process-shell-command "Show in Finder" nil "open .")))
@@ -184,6 +184,12 @@
 (define-key global-map [?\s-p] nil) ; ns-print-buffer
 (define-key global-map [?\s-S] nil) ; ns-write-file-using-panel
 (define-key global-map [?\s-o] nil) ; ns-open-file-using-panel
+
+;;; グローバルなキーバインドの設定
+(define-key global-map (kbd "C-c w") 'MyTool-osx-dictionary)
+(define-key global-map (kbd "C-c k") 'MyTool-file-complete)
+(define-key global-map (kbd "C-;") 'ispell-word)
+(define-key global-map [?\s-O] 'MyTool-show-in-finder)
 
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
@@ -212,10 +218,6 @@
 	     (define-key YaTeX-mode-map [?\s-2] 'MyTeX-switch-to-previousbuffer)
 	     ))
 
-(define-key global-map (kbd "C-c w") 'My-osx-dictionary)
-(define-key global-map (kbd "C-c k") 'My-file-complete)
-(define-key global-map (kbd "C-;") 'ispell-word)
-(define-key global-map [?\s-O] 'My-show-in-finder)
 
 ;;;; TeX ファイルを一括で開き YaTeX-parent-file を設定する
 ;;; TeX ファイルのディレクトリ内に mytexconfig というファイルを用意し、
