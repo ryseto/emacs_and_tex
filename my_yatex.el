@@ -1,13 +1,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-07 09:11:54 seto>
+;; Time-stamp: <2012-03-11 07:30:24 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
-;;; Cmd-T and Cmd-B         : タイプセット
-;;; Shift-Cmd-P             : プレビュー
-;;; Shift-Cmd-R, C-c s      : Skim PDF カーソル位置表示
-;;; Shift-Cmd-B             : bibtex
-;;; Shift-Cmd-I             : makeindex
+;;; Cmd-t, Cmd-b            : タイプセット
+;;; Cmd-P                   : プレビュー
+;;; Cmd-", Cmd-R, C-c s     : Skim PDF カーソル位置表示
+;;; Cmd-B                   : bibtex
+;;; Cmd-I                   : makeindex
 ;;; Cmd-1                   : メインファイルのバッファを開く
 ;;; Cmd-2                   : 1つ前のバッファを開く
 ;;; Tab                     : インデント (latex-indent)
@@ -173,11 +173,6 @@
   (interactive)
   (switch-to-buffer nil))
 
-(defun MyTeX-null ()
-  (interactive)
-  (message "MyTeX-null is called"))
-
-
 ;;; クラッシュするキーバインドを無効にする。
 (define-key global-map [?\s-p] nil) ; ns-print-buffer
 (define-key global-map [?\s-S] nil) ; ns-write-file-using-panel
@@ -191,8 +186,8 @@
 	     (define-key YaTeX-mode-map [?\s-b] 'YaTeX-typeset-buffer)
 	     (define-key YaTeX-mode-map [?\s-P] 'YaTeX-preview)
 	     (define-key YaTeX-mode-map [?\s-R] 'skim-forward-search)
+	     (define-key YaTeX-mode-map [?\s-\"] 'skim-forward-search)
 	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
-
 	     (define-key YaTeX-mode-map [?\s-B] 
 	       (lambda 	() (interactive)
 		 (YaTeX-call-builtin-on-file "BIBTEX" bibtex-command)))
@@ -220,6 +215,10 @@
 ;;;      '("foo_main.tex" "foo_included_1.tex" "foo_included_2.tex" ))
 ;;; TeX ファイルを開く時にこのリストの先頭にあるファイルを YaTeX-parent-file として
 ;;; 他の全てのファイルも同時にバッファに開く。
+;;; (YaTeX 標準の機能でも、C-c C-d に割り当てられている
+;;; YaTeX-display-hierarchy を実行すると input/include されているファイルの
+;;; 一覧が見れると同時にそれらを一括で開くことができる。)
+
 
 (defun MyTeX-initial-setup ()
   (interactive)
