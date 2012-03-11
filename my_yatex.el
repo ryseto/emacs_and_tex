@@ -1,24 +1,25 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-11 18:29:38 seto>
+;; Time-stamp: <2012-03-11 18:50:47 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
-;;; Cmd-t, Cmd-b            : タイプセット
-;;; Cmd-P                   : プレビュー
-;;; Cmd-R, C-c s            : Skim PDF カーソル位置表示
-;;; Cmd-B                   : bibtex
-;;; Cmd-I                   : makeindex
-;;; Cmd-1                   : メインファイルのバッファを開く
-;;; Cmd-2                   : 1つ前のバッファを開く
-;;; Tab                     : インデント (latex-indent)
-;;; C-c Tab                 : 領域をインデント (latex-indent)
-;;; C-c d                   : latexmk -c を実行
-;;; Cmd-_                   : "_{\mathrm{}}" を挿入
+;;; command + T / command + B      : タイプセット
+;;; shift + command + P            : プレビュー
+;;; shift + command R / C-c s      : Skim PDF カーソル位置表示
+;;; shift + command + B            : bibtex
+;;; shift + command + I            : makeindex
+;;; command + 1                    : メインファイルのバッファを開く
+;;; command + 2                    : 1つ前のバッファを開く
+;;; Tab                            : インデント (latex-indent)
+;;; C-c + Tab                      : 領域をインデント (latex-indent)
+;;; C-c + d                        : latexmk -c を実行
+;;; command + "_"                  : "_{\mathrm{}}" を挿入
 ;;; === グローバル ===
-;;; C-c w                   : OSX の辞書で調べる
-;;; C-c k                   : ファイル名の補完
-;;; C-;                     : スペルチェック
-;;; Cmd-O                   : Finder に表示
+;;; C-c w                          : OSX の辞書で調べる
+;;; C-c k                          : ファイル名の補完
+;;; C-;                            : スペルチェック
+;;; shift + command + O            : Finder に表示
+;;; option + shift + command + F   : Finder でフォルダを開く
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; テスト版の YaTeX を使っているのでそちらが優先してロードされるようにする。
@@ -196,6 +197,7 @@
 (define-key global-map (kbd "C-c k") 'MyTool-file-complete)
 (define-key global-map (kbd "C-;") 'ispell-word)
 (define-key global-map [?\s-O] 'MyTool-show-in-finder)
+(define-key global-map [?\M-\s-F] 'MyTool-open-folder-in-finder)
 
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
