@@ -12,7 +12,7 @@
 # bibtex="bibtex"
 # makeindex="makeindex"
 # dvipdf=""
-# pdfviewer="skim_reload.sh"
+# pdfviewer="skim_reload.sh -g"
 ################################################################################
 #!/bin/sh
 if [ $# == 0 -o "$1" == "-h" -o "$1" == "-help"  ]; then
@@ -21,7 +21,7 @@ Usage: semiautotex [-b] [-i] [-pv] TEXFILE
 Options:
 -b          run BibTeX with LaTeX
 -i          run MakeIndex with LaTeX
--pv         open PDF viewer"
+-pv         open or reload PDF file"
     exit 0
 fi
 
@@ -51,7 +51,7 @@ latexdraft="platex"
 bibtex="pbibtex"
 makeindex="mendex -U"
 dvipdf="dvipdfmx"
-pdfviewer="~/bin/skim_reload.sh"' > $rcfile
+pdfviewer="skim_reload.sh -g"' > $rcfile
 	echo "SemiAutoTeX: rc file ($rcfile) is generated."
     fi
 fi
