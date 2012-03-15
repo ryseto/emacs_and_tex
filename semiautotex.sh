@@ -1,22 +1,22 @@
 ################################################################################
-#### SemiAutoTeX ver 0.02
+#### SemiAutoTeX ver 0.03
 ################################################################################
 # You can find some explanations at
 # http://d.hatena.ne.jp/setoryohei/20120219
 #
-# You can put a rc file '.semiautotexrc' in your home directory.
-# If there is a rc file in current directly, it has the priority.
-# Example of '~/.semiautotexrc'
-# latex="pdflatex -synctex=1"
-# latexdraft="pdflatex -draftmode"
-# bibtex="bibtex"
-# makeindex="makeindex"
-# dvipdf=""
-# pdfviewer="skim_reload.sh -g"
+# You can put an rc file '.texcmdrc' in your home directory.
+# If there is an rc file 'texcmdrc' in current directly, it has the priority.
+# Example of the rc file:
+#  LATEX="pdflatex -synctex=1"
+#  LATEXDRAFT="pdflatex -draftmode"
+#  BIBTEX="bibtex"
+#  MAKEINDEX="makeindex"
+#  DVIPDF="dvipdfm"
+#  PDFVIEWER="skim_reload.sh -g"
 ################################################################################
 #!/bin/sh
 if [ $# == 0 -o "$1" == "-h" -o "$1" == "-help"  ]; then
-    echo "SemiAutoTeX 0.02:  Semi-automatic LaTeX document generation routine
+    echo "SemiAutoTeX 0.03:  Semi-automatic LaTeX document generation routine
 Usage: semiautotex [-b] [-i] [-pv] TEXFILE 
 Options:
 -b          run BibTeX with LaTeX
@@ -25,8 +25,23 @@ Options:
     exit 0
 fi
 
+TEXCMDRC=texcmdrc
+MD5LOGDIR="${HOME}/Library/Caches/TeXMD5Dir"
+[ -d ${MD5LOGDIR} ] || mkdir -p ${MD5LOGDIR}
+
+DVIPDF=""
+LATEXDRAFT=""
+
+# inport rc file
+[ -f "${HOME}/.${TEXCMDRC}" ] && . "${HOME}/.${TEXCMDRC}" ||:
+[ -f ${TEXCMDRC} ] && . ${TEXCMDRC} ||:
+if [ "$LATEXDRAFT" == "" ]; then
+    LATEXDRAFT="$LATEX"
+fi
+
 mode="tex"
 pdfviewmode=0;
+
 while [ "${1:0:1}" == "-" ]; do
     if [ "$1" == "-b" ]; then
 	mode="bib"
@@ -38,111 +53,67 @@ while [ "${1:0:1}" == "-" ]; do
     shift
 done
 
-rcfile=".semiautotexrc"
-if [ ! -f $rcfile ]; then
-    rcfile="${HOME}/.semiautotexrc"
-    if [ ! -f $rcfile ]; then
-	touch $rcfile
-	echo '############################################################
-## example of rc file for SemiAutoTeX
-############################################################
-latex="platex -synctex=1"
-latexdraft="platex"
-bibtex="pbibtex"
-makeindex="mendex -U"
-dvipdf="dvipdfmx"
-pdfviewer="skim_reload.sh -g"' > $rcfile
-	echo "SemiAutoTeX: rc file ($rcfile) is generated."
-    fi
-fi
-
-DVIPDF=""
-LATEXDRAFT=""
-
-while read LINE
+for i in $@
 do
-    if [ "${LINE:0:1}" != "#" ]; then
-	case "`echo ${LINE} | cut -d"=" -f1`" in
-	    "latex" ) 
-		LATEX="`echo ${LINE} | cut -d'\"' -f2`";;
-	    "latexdraft" )
-		LATEXDRAFT="`echo ${LINE} | cut -d'\"' -f2`";;
-	    "bibtex" )
-		BIBTEX="`echo ${LINE} | cut -d'\"' -f2`";;
-	    "makeindex" )
-		MAKEINDEX="`echo ${LINE} | cut -d'\"' -f2`";;
-	    "dvipdf" )
-		DVIPDF="`echo ${LINE} | cut -d'\"' -f2`";;
-	    "pdfviewer" )
-		PDFVIEWER="`echo ${LINE} | cut -d'\"' -f2`";;
-	esac
-    fi
-done <$rcfile
+    [ -f $i -o -f ${i}.tex ] && INPUTFILE=$i || OPTIONS="$OPTIONS $i"
+done
 
-if [ "$LATEXDRAFT" == "" ]; then
-    LATEXDRAFT="$LATEX"
-fi
+JOBNAME=${INPUTFILE##*/}
+JOBNAME=${JOBNAME%.*}
 
-texfile=`basename $1 .tex`
-typset_pass=0 
+[ -f ${MD5LOGDIR}/${JOBNAME} ] && checksum=`cat ${MD5LOGDIR}/${JOBNAME}` ||:
 
 case "$mode" in
     "tex" ) 
-	if [ -f $texfile.aux ]; then
-	    checksum=`md5 -q $texfile.aux`
-	    $LATEX $texfile && typset_pass=1 
+	if [ -f ${JOBNAME}.aux ]; then
+	    $LATEX $@ || exit 1
 	    message="typeset"
 	else
-	    $LATEXDRAFT $texfile && typset_pass=1
+	    $LATEXDRAFT $@ || exit 1
 	    message="typeset(d)"
 	fi
-	if [ $typset_pass = 1 ]; then
-	    while checksum_before="$checksum" && \
-		checksum=`md5 -q $texfile.aux` && \
-		[ "$checksum" != "$checksum_before" ]; do
-		$LATEX $texfile 
-		message=`echo "${message}+typeset"`
-	    done
-	fi 
+
+	while checksum_before="$checksum" && \
+            checksum=`md5 -q ${JOBNAME}.aux` && \
+            [ "$checksum" != "$checksum_before" ]; do
+            $LATEX $@ || exit 1
+            message="${message}+typeset"
+	done
 	;;
     "bib" )
-	$LATEXDRAFT $texfile && typset_pass=1
+	$LATEXDRAFT $@ || exit 1
 	message="typeset(d)"
-	if [ $typset_pass = 1 ]; then
-	    $BIBTEX $texfile 
-	    $LATEXDRAFT $texfile && $LATEX $texfile
-	    message=`echo "${message}+BibTeX+typeset(d)+typeset"`
-	fi
+	$BIBTEX ${JOBNAME}
+	$LATEXDRAFT $@ && $LATEX $@
+	checksum=`md5 -q ${JOBNAME}.aux`
+	message=`echo "${message}+BibTeX+typeset(d)+typeset"`
 	;;
     "idx" )
-	checksum=`md5 -q $texfile.aux`
-	$LATEXDRAFT $texfile && typset_pass=1
+	$LATEXDRAFT $texfile || exit 1
 	message="typeset(d)"
-	if [ $typset_pass = 1 ]; then
-	    while checksum_before="$checksum" && \
-		checksum=`md5 -q $texfile.aux` && \
-		[ "$checksum" != "$checksum_before" ]; do
-		$LATEXDRAFT $texfile 
-		message=`echo "${message}+typeset(d)"`
-	    done
-	    $MAKEINDEX $texfile 
-	    $LATEX $texfile 
-	    message=`echo "${message}+MakeIndex+typeset"`
-	fi
+	while checksum_before="$checksum" && \
+            checksum=`md5 -q ${JOBNAME}.aux` && \
+            [ "$checksum" != "$checksum_before" ]; do
+            $LATEXDRAFT $@ || exit 1
+            message="${message}+typeset(d)"
+	done
+	$MAKEINDEX ${JOBNAME}
+	$LATEX $@ 
+	checksum=`md5 -q ${JOBNAME}.aux`
+	message=`echo "${message}+MakeIndex+typeset"`
 	;;
 esac
 
-if [ $typset_pass = 1 ]; then
-    if [ "$DVIPDF" != "" ]; then
-	$DVIPDF $texfile 
-	message=`echo "${message}+DVIPDF"`
-    fi
-    echo "SemiAutoTeX: $message"
-    if [ $pdfviewmode = 1 ]; then
-	echo "$PDFVIEWER $texfile.pdf"
-	$PDFVIEWER $texfile.pdf
-    fi
-else 
-    echo "SemiAutoTeX: failed"
-    exit 1
+echo $checksum > ${MD5LOGDIR}/${JOBNAME}
+
+
+if [ "$DVIPDF" != "" ]; then
+    $DVIPDF ${JOBNAME}
+    message=`echo "${message}+DVIPDF"`
+fi
+echo "SemiAutoTeX: $message"
+
+if [ $pdfviewmode = 1 ]; then
+    echo "$PDFVIEWER ${JOBNAME}.pdf"
+    $PDFVIEWER ${JOBNAME}.pdf
 fi
