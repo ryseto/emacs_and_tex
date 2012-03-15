@@ -12,23 +12,28 @@
 # bibtex="bibtex"
 # makeindex="makeindex"
 # dvipdf=""
+# pdfviewer="skim_reload.sh"
 ################################################################################
 #!/bin/sh
 if [ $# == 0 -o "$1" == "-h" -o "$1" == "-help"  ]; then
     echo "SemiAutoTeX 0.02:  Semi-automatic LaTeX document generation routine
-Usage: semiautotex [-b] [-i] TEXFILE 
+Usage: semiautotex [-b] [-i] [-pv] TEXFILE 
 Options:
 -b          run BibTeX with LaTeX
--i          run MakeIndex with LaTeX"
+-i          run MakeIndex with LaTeX
+-pv         open PDF viewer"
     exit 0
 fi
 
 mode="tex"
+pdfviewmode=0;
 while [ "${1:0:1}" == "-" ]; do
     if [ "$1" == "-b" ]; then
 	mode="bib"
     elif [ "$1" == "-i" ]; then
 	mode="idx"
+    elif [ "$1" == "-pv" ]; then
+	pdfviewmode=1;
     fi
     shift
 done
@@ -45,7 +50,8 @@ latex="platex -synctex=1"
 latexdraft="platex"
 bibtex="pbibtex"
 makeindex="mendex -U"
-dvipdf="dvipdfmx"' > $rcfile
+dvipdf="dvipdfmx"
+pdfviewer="~/bin/skim_reload.sh"' > $rcfile
 	echo "SemiAutoTeX: rc file ($rcfile) is generated."
     fi
 fi
@@ -67,6 +73,8 @@ do
 		MAKEINDEX="`echo ${LINE} | cut -d'\"' -f2`";;
 	    "dvipdf" )
 		DVIPDF="`echo ${LINE} | cut -d'\"' -f2`";;
+	    "pdfviewer" )
+		PDFVIEWER="`echo ${LINE} | cut -d'\"' -f2`";;
 	esac
     fi
 done <$rcfile
@@ -130,6 +138,10 @@ if [ $typset_pass = 1 ]; then
 	message=`echo "${message}+DVIPDF"`
     fi
     echo "SemiAutoTeX: $message"
+    if [ $pdfviewmode = 1 ]; then
+	echo "$PDFVIEWER $texfile.pdf"
+	$PDFVIEWER $texfile.pdf
+    fi
 else 
     echo "SemiAutoTeX: failed"
     exit 1
