@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-15 06:45:44 seto>
+;; Time-stamp: <2012-03-16 11:48:26 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -8,6 +8,7 @@
 ;;; shift + command R, C-c s       : Skim PDF カーソル位置表示
 ;;; shift + command + B            : bibtex
 ;;; shift + command + I            : makeindex
+;;; shift + option + command + B   : BibDesk を開く
 ;;; command + 1                    : メインファイルのバッファを開く
 ;;; command + 2                    : 1つ前のバッファを開く
 ;;; Tab                            : インデント (latex-indent)
@@ -24,7 +25,7 @@
 
 ;;; テスト版の YaTeX を使っているのでそちらが優先してロードされるようにする。
 ;;; 現在 1.75.3 を使用中。
-;;(setq load-path (cons (expand-file-name "~/.emacs.d/yatex") load-path))
+(setq load-path (cons (expand-file-name "~/.emacs.d/yatex") load-path))
 
 (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
 (setq auto-mode-alist
@@ -44,9 +45,9 @@
 
 ;;; シェルスクリプト SemiAutoTeX でタイプセット
 ;;; https://github.com/ryseto/emacs_and_tex/blob/master/semiautotex.sh
-(setq tex-command "semiautotex.sh -pv"
-      bibtex-command "semiautotex.sh -b -pv"
-      makeindex-command "semiautotex.sh -i -pv"
+(setq tex-command "semiautotex.sh"
+      bibtex-command "semiautotex.sh -b"
+      makeindex-command "semiautotex.sh -i"
       YaTeX-typeset-auto-rerun nil ; rerun 機能を無効 (1.75.x 以降)
       dvi2-command "open -a Skim" ; PDF プレビュアとして Skim.app を使う
       )
@@ -228,7 +229,6 @@
 	     (define-key YaTeX-mode-map "\t" 'latex-indent-command)
 	     (define-key YaTeX-mode-map (kbd "C-c TAB") 'latex-indent-region-command)
 	     (define-key YaTeX-mode-map [?\s-_] 'MyTeX-insert-subscript_rm)
-
 	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
 	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
 	     (define-key YaTeX-mode-map [?\s-1] 'YaTeX-visit-main)
