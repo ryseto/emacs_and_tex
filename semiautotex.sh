@@ -3,7 +3,9 @@
 ################################################################################
 # You can find some explanations at
 # http://d.hatena.ne.jp/setoryohei/20120219
-# 
+# Many improvements by Kobayashi-san (OSX Workshop)
+# http://macwiki.sourceforge.jp/wiki/index.php/MacOSX_WorkShop/10.7
+#
 # You can put an rc file '.texcmdrc' in your home directory.
 # If there is an rc file 'texcmdrc' in current directly, it has the priority.
 # Example of the rc file:
