@@ -1,56 +1,58 @@
 ################################################################################
 #### SemiAutoTeX ver 0.04 written by Ryohei Seto
 ################################################################################
-# You can find some explanations at
-# http://d.hatena.ne.jp/setoryohei/20120219
-# Many improvements by Kobayashi-san (OSX Workshop)
-# http://macwiki.sourceforge.jp/wiki/index.php/MacOSX_WorkShop/10.7
+#   You can find some explanations at
+#   http://d.hatena.ne.jp/setoryohei/20120219
+#   Many improvements by Kobayashi-san (OSX Workshop)
+#   http://macwiki.sourceforge.jp/wiki/index.php/MacOSX_WorkShop/10.7
 #
 ### Configuration:
-# You can put an rc file `.texcmdrc' in your home directory.
-# If there is an rc file `texcmdrc' in current directly, it has the priority.
-# ホームディレクトリに `.texcmdrc' を置く。
-# もし作業ディレクトリに `texcmdrc' がある場合は、その設定が優先させる。
-# Example of the rc file:
-#  LATEX="pdflatex -synctex=1"
-#  LATEXDRAFT="pdflatex -draftmode"
-#  BIBTEX="bibtex"
-#  MAKEINDEX="makeindex"
-#  DVIPDF="dvipdfm"
-#  PDFVIEWER="skim_reload.sh -g"
-#
-### DVIPDF:
-# If DVIPDF is given, i.e. not `nil', 
-# the DVIPDF program is called after a typesetting process.
-# 変数 DVIPDF が設定されているとき（`nil'以外）は、
-# タイプセット処理の後にそれを実行し DVI から PDF に変換する。
-#
-### PDFVIEWER:
-# If PDFVIEWER is given, i.e. not "nil", 
-# the previewer proglam is called at the end.
-# 変数 PDFVIEWER が設定されているとき（`nil'以外）は、
-# 全ての処理の後にそれを実行しプレビュアをリロードする。
+#   You can put an rc file `.texcmdrc' in your home directory.
+#   If there is an rc file `texcmdrc' in current directly, it has the priority.
+#   ホームディレクトリに `.texcmdrc' を置く。
+#   もし作業ディレクトリに `texcmdrc' がある場合は、その設定が優先させる。
+#   Example of the rc file:
+#     LATEX="pdflatex -synctex=1"
+#     LATEXDRAFT="pdflatex -draftmode"
+#     BIBTEX="bibtex"
+#     MAKEINDEX="makeindex"
+#     DVIPDF="dvipdfm"
+#     PDFVIEWER="skim_reload.sh -g"
 #
 ### TeX mode:
-# aux ファイルがない場合は必ず2回以上実行する。
-# cross-references を整合させるための繰り返しは
-# タイプセットによって aux ファイルが変化しなくなるまで続ける。
+#   aux ファイルがない場合は必ず2回以上実行する。
+#   cross-references を整合させるための typeset 繰り返しは
+#   aux ファイルが変化しなくなるまで続ける。
 #
 ### BibTeX mode:
-# preprocess:
+#  preprocess:
 #   タイプセット(ドラフトモード)1回は必須。
-# postprocess:
+#  postprocess:
 #   2回のタイプセット（typeset(d)+typset）は必須。
-#   参考文献リストが書類の途中に入り、それにより以降のページ番号が変わる可能性が
-#   あるので、最後のタイプセットは aux ファイルの変化がなくなるまで繰り返す。
+#   参考文献リストが書類の途中に置かれている場合は、
+#   それ以降のページ番号が変わる参考文献リストのページ数によって変わる可能性があるので、
+#   最後のタイプセットは aux ファイルの変化がなくなるまで繰り返す。
 #
 ### MakeIndex mode:
-# preprocess:
+#  preprocess:
 #   MakeIndex では索引に単語のページ番号を与える必要があるので、
 #   tableofcontents などによりページ番号が変わらなくなるまでタイプセットを繰り返す。
-# postprocess:
+#  postprocess:
 #   索引作成の影響でページ番号が変わる事はないと想定して後の自動繰り返しはしない。
 #   (もし途中に索引が来てページ番号が変わるなら、MakeIndex から再実行する必要がある。)
+#
+### Calling DVIPDF:
+#   If DVIPDF is given, i.e. not `nil', 
+#   the DVIPDF program is called after a typesetting process.
+#   変数 DVIPDF が設定されているとき（`nil'以外）は、
+#   タイプセット処理の後にそれを実行し DVI から PDF に変換する。
+#
+### Calling PDFVIEWER:
+#   If PDFVIEWER is given, i.e. not "nil", 
+#   the previewer proglam is called at the end.
+#   変数 PDFVIEWER が設定されているとき（`nil'以外）は、
+#   全ての処理の後にそれを実行しプレビュアをリロードする。
+#
 ################################################################################
 
 #!/bin/sh
