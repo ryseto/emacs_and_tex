@@ -1,5 +1,5 @@
 ################################################################################
-#### SemiAutoTeX ver 0.03
+#### SemiAutoTeX ver 0.04 written by Ryohei Seto
 ################################################################################
 # You can find some explanations at
 # http://d.hatena.ne.jp/setoryohei/20120219
@@ -36,26 +36,26 @@
 # cross-references を整合させるための繰り返しは
 # タイプセットによって aux ファイルが変化しなくなるまで続ける。
 #
-### BibTeX モード:
+### BibTeX mode:
 # preprocess:
-# タイプセット(ドラフトモード)一回実行は必須。
+#   タイプセット(ドラフトモード)1回は必須。
 # postprocess:
-# 2回のタイプセット（typeset(d)+typset）は必須。
-# 参考文献リストが書類の途中に入り、それにより以降のページ番号が変わる可能性が
-# あるので、最後のタイプセットは aux ファイルの変化がなくなるまで繰り返す。
+#   2回のタイプセット（typeset(d)+typset）は必須。
+#   参考文献リストが書類の途中に入り、それにより以降のページ番号が変わる可能性が
+#   あるので、最後のタイプセットは aux ファイルの変化がなくなるまで繰り返す。
 #
-### MakeIndex モード:
+### MakeIndex mode:
 # preprocess:
-# MakeIndex では索引に単語のページ番号を与える必要があるので、
-# tableofcontents などによりページ番号が変わらなくなるまで
-# タイプセットを繰り返す。
+#   MakeIndex では索引に単語のページ番号を与える必要があるので、
+#   tableofcontents などによりページ番号が変わらなくなるまでタイプセットを繰り返す。
 # postprocess:
-# 索引作成の影響でページ番号が変わる事はないと想定して後の自動繰り返しはしない。
-# (もし途中に索引が来てページ番号が変わるなら、MakeIndex から再実行する必要がある。)
+#   索引作成の影響でページ番号が変わる事はないと想定して後の自動繰り返しはしない。
+#   (もし途中に索引が来てページ番号が変わるなら、MakeIndex から再実行する必要がある。)
 ################################################################################
+
 #!/bin/sh
 if [ $# == 0 -o "$1" == "-h" -o "$1" == "-help"  ]; then
-    echo "SemiAutoTeX 0.03:  Semi-automatic LaTeX document generation routine
+    echo "SemiAutoTeX 0.04:  Semi-automatic LaTeX document generation routine
 Usage: semiautotex [-b] [-i] TEXFILE 
 Options:
 -b          run BibTeX with LaTeX
@@ -105,8 +105,9 @@ JOBNAME=${JOBNAME%.*}
 # キャッシュに残っていればそれを使う。
 [ -f ${MD5LOGDIR}/${JOBNAME} ] && checksum=`cat ${MD5LOGDIR}/${JOBNAME}` ||:
 
+##########################################################################################
 case "$mode" in
-################################# LaTeX mode ###############################################
+################################# LaTeX mode #############################################
     "tex" ) 
 	if [ -f ${JOBNAME}.aux ]; then
 	    $LATEX $@ || exit 1
@@ -124,7 +125,7 @@ case "$mode" in
             message="${message}+typeset"
 	done
 	;;
-################################# BibTeX mode #############################################
+################################# BibTeX mode ############################################
     "bib" )
 ### Preprocess ###
 	$LATEXDRAFT $@ || exit 1
@@ -142,7 +143,7 @@ case "$mode" in
             message="${message}+typeset"
 	done
 	;;
-################################ MakeIndex mode ###########################################
+################################ MakeIndex mode ##########################################
     "idx" )
 ### Preprocess ###
 	$LATEXDRAFT $@ || exit 1
@@ -160,18 +161,19 @@ case "$mode" in
         message="${message}+MakeIndex+typeset"
 	;;
 esac
+##########################################################################################
+echo "SemiAutoTeX: $message"
 
 # 次回の処理の為に、チェックサムをキャッシュに残す。
 echo $checksum > ${MD5LOGDIR}/${JOBNAME}
 
-# DVIPDF が設定されている場合は DVI から PDF に変換
+### DVI から PDF に変換
 if [ "$DVIPDF" != "" ]; then
-    $DVIPDF ${JOBNAME}
+    $DVIPDF ${JOBNAME} || exit 1
     message=`echo "${message}+DVIPDF"`
 fi
-echo "SemiAutoTeX: $message"
 
-# PDFVIEWER が設定されている場合はプレビュアー起動(再読み込み)コマンドを実行
+### プレビュアー起動(再読み込み)コマンドを実行
 if [ "$PDFVIEWER" != "" ]; then
     echo "$PDFVIEWER ${JOBNAME}.pdf"
     $PDFVIEWER ${JOBNAME}.pdf
