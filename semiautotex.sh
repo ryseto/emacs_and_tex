@@ -31,6 +31,8 @@
 #   aux ファイルがない場合は必ず2回以上実行する。
 #   cross-references を整合させるための typeset 繰り返しは
 #   aux ファイルが変化しなくなるまで続ける。
+#   注意: aux ファイルのチェックサムを記録したファイルが次の場所に作られる。
+#   "~/Library/Caches/TeXMD5Dir"
 #
 ### BibTeX mode:
 #
@@ -124,8 +126,8 @@ JOBNAME=${JOBNAME%.*}
 
 ##########################################################################################
 case "$mode" in
-################################# LaTeX mode #############################################
-    "tex" ) 
+### LaTeX mode
+    "tex" )
 	if [ -f ${JOBNAME}.aux ]; then
 	    $LATEX $@ || exit 1
 	    message="typeset"
@@ -142,13 +144,13 @@ case "$mode" in
             message="${message}+typeset"
 	done
 	;;
-################################# BibTeX mode ############################################
+### BibTeX mode
     "bib" )
-### Preprocess ###
+# Preprocess
 	$LATEXDRAFT $@ || exit 1
-### Main process ###
+# Main process
 	$BIBTEX ${JOBNAME}
-### Postprocess ###
+# Postprocess
 	$LATEXDRAFT $@
 	checksum=`md5 -q ${JOBNAME}.aux`
 	$LATEX $@
@@ -160,9 +162,9 @@ case "$mode" in
             message="${message}+typeset"
 	done
 	;;
-################################ MakeIndex mode ##########################################
+### MakeIndex mode
     "idx" )
-### Preprocess ###
+# Preprocess
 	$LATEXDRAFT $@ || exit 1
 	message="typeset(d)"
 	while checksum_before="$checksum" && \
@@ -171,16 +173,16 @@ case "$mode" in
             $LATEXDRAFT $@
             message="${message}+typeset(d)"
 	done
-### Main process ###
+# Main process
 	$MAKEINDEX ${JOBNAME}
-### Postprocess ###
+# Postprocess
         $LATEX $@
         message="${message}+MakeIndex+typeset"
 	;;
 esac
 ##########################################################################################
-echo "SemiAutoTeX: $message"
 
+echo "SemiAutoTeX: $message"
 # 次回の処理の為に、チェックサムをキャッシュに残す。
 echo $checksum > ${MD5LOGDIR}/${JOBNAME}
 
