@@ -31,8 +31,6 @@
 #   aux ファイルがない場合は必ず2回以上実行する。
 #   cross-references を整合させるための typeset 繰り返しは
 #   aux ファイルが変化しなくなるまで続ける。
-#   注意: aux ファイルのチェックサムを記録したファイルが次の場所に作られる。
-#   "~/Library/Caches/TeXMD5Dir"
 #
 ### BibTeX mode:
 #
@@ -71,6 +69,21 @@
 #   変数 PDFVIEWER が設定されているとき（`nil'以外）は、
 #   全ての処理の後にそれを実行しプレビュアをリロードする。
 #
+### checksum
+#
+#   aux ファイルのチェックサムを記録したファイルは
+#    "~/Library/Caches/TeXMD5Dir/(拡張子なしのファイル名)"
+#   異なるディレクトリで同一名の TeX ファイルを編集している時は衝突するが、
+#   それらを交互に編集するような状況は滅多にないので気にしない。
+#
+### Statistical info
+#   
+#   タイプセットの回数を数える。
+#   Typeset, Bibtex, Makeindex の実行回数を表示する。
+#   t534 b39 i2  
+#   記録する場所は Checksum と同じ。
+#   "~/Library/Caches/TeXMD5Dir/?.stat"
+#
 ################################################################################
 #!/bin/sh
 if [ $# == 0 -o "$1" == "-h" -o "$1" == "-help"  ]; then
@@ -98,6 +111,7 @@ PDFVIEWER="skim_reload.sh -g"
 # import rc file
 [ -f "${HOME}/.${TEXCMDRC}" ] && . "${HOME}/.${TEXCMDRC}" ||:
 [ -f ${TEXCMDRC} ] && . ${TEXCMDRC} ||:
+
 if [ "$LATEXDRAFT" == "" ]; then
     LATEXDRAFT="$LATEX"
 fi
@@ -124,6 +138,19 @@ JOBNAME=${JOBNAME%.*}
 # キャッシュに残っていればそれを使う。
 [ -f ${MD5LOGDIR}/${JOBNAME} ] && checksum=`cat ${MD5LOGDIR}/${JOBNAME}` ||:
 
+# タイプセットの回数を記録する
+if [ -f ${MD5LOGDIR}/${JOBNAME}.stat ]; then
+    cnt=0;
+    while read buf ; do
+	typeset_stat[$cnt]=$buf
+	cnt=$(expr $cnt + 1)
+    done < ${MD5LOGDIR}/${JOBNAME}.stat
+else
+    typeset_stat[0]=0
+    typeset_stat[1]=0
+    typeset_stat[2]=0
+fi 
+
 ##########################################################################################
 case "$mode" in
 ### LaTeX mode
@@ -143,6 +170,7 @@ case "$mode" in
             $LATEX $@
             message="${message}+typeset"
 	done
+	typeset_stat[0]=$(expr ${typeset_stat[0]} + 1)
 	;;
 ### BibTeX mode
     "bib" )
@@ -161,6 +189,7 @@ case "$mode" in
             $LATEX $@
             message="${message}+typeset"
 	done
+	typeset_stat[1]=$(expr ${typeset_stat[1]} + 1)
 	;;
 ### MakeIndex mode
     "idx" )
@@ -178,6 +207,7 @@ case "$mode" in
 # Postprocess
         $LATEX $@
         message="${message}+MakeIndex+typeset"
+	typeset_stat[2]=$(expr ${typeset_stat[2]} + 1)
 	;;
 esac
 ##########################################################################################
@@ -185,6 +215,9 @@ esac
 echo "SemiAutoTeX: $message"
 # 次回の処理の為に、チェックサムをキャッシュに残す。
 echo $checksum > ${MD5LOGDIR}/${JOBNAME}
+echo ${typeset_stat[0]} > ${MD5LOGDIR}/${JOBNAME}.stat
+echo ${typeset_stat[1]} >> ${MD5LOGDIR}/${JOBNAME}.stat
+echo ${typeset_stat[2]} >> ${MD5LOGDIR}/${JOBNAME}.stat
 
 ### DVI から PDF に変換
 if [ "$DVIPDF" != "" ]; then
@@ -197,3 +230,5 @@ if [ "$PDFVIEWER" != "" ]; then
     echo "$PDFVIEWER ${JOBNAME}.pdf"
     $PDFVIEWER ${JOBNAME}.pdf
 fi
+
+echo "t${typeset_stat[0]} b${typeset_stat[1]} i${typeset_stat[2]}"
