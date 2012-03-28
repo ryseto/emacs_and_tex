@@ -1,1 +1,10 @@
 OSX の Cocoa Emacs で YaTeX を使って LaTeX 編集を行っている。
+
+- semiautotex.sh
+semiautotex.sh は latexmk 的なシェルスクリプト。YaTeX から呼び出すことを想定している。
+bibtex や makeindex が必要である事を自動判定できない。
+しかし、正しい順番で必要な回数 LaTeX コマンドを実行するので、
+一回の呼び出しだけでプレビューから？マークが無くなる。
+
+- my_yatex.el 
+my_yatex.el は YaTeX の設定。OSXライクなショートカットなどを追加。
