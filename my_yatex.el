@@ -1,15 +1,18 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-03-16 11:48:26 seto>
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Time-stamp: <2012-04-01 17:31:05 seto>
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
-;;; command + T, command + B       : タイプセット
-;;; shift + command + P            : プレビュー
+;;; command + T, command + B       : タイプセット (C-c C-t j)
+;;; shift + command + B            : タイプセット with bibtex  (C-c C-t b)
+;;; shift + command + I            : タイプセット with makeindex (C-c C-t i)
+;;; shift + command + P            : プレビュー (C-c C-t p)
 ;;; shift + command R, C-c s       : Skim PDF カーソル位置表示
-;;; shift + command + B            : bibtex
-;;; shift + command + I            : makeindex
+;;; ctrl + command + J             : 対応オブジェクトへのジャンプ (C-c C-g)
 ;;; shift + option + command + B   : BibDesk を開く
-;;; command + 1                    : メインファイルのバッファを開く
+;;; shift + option + command + P   ; Preview.app で PDF ファイルを開く
+;;; shift + command + H            : 入力ファイルを表示 YaTeX-display-hierarchy (C-c C-d)
+;;; command + 1                    : メインファイルのバッファを開く (C-c ^)
 ;;; command + 2                    : 1つ前のバッファを開く
 ;;; Tab                            : インデント (latex-indent)
 ;;; C-c Tab                        : 領域をインデント (latex-indent)
@@ -21,7 +24,8 @@
 ;;; C-;                            : スペルチェック
 ;;; shift + command + O            : Finder に表示
 ;;; option + shift + command + F   : Finder でフォルダを開く
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; option + command + H           : 実行されているその他すべてのアプリケーションのウインドウを隠す
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; テスト版の YaTeX を使っているのでそちらが優先してロードされるようにする。
 ;;; 現在 1.75.3 を使用中。
@@ -97,6 +101,17 @@
     (process-kill-without-query
      (start-process-shell-command "SyncTeX with Skim" nil cmd args))))
 
+;;;; Preview.app で開く
+(defun MyTeX-open-PreviewApp ()
+  (interactive)
+  (let* ((mtf)
+         (pf)
+         (cmd "open -a Preview.app"))
+    (setq mtf YaTeX-parent-file)
+    (setq pf (concat (car (split-string mtf "\\.")) ".pdf"))
+    (process-kill-without-query
+     (start-process-shell-command "Open Preview.app" nil cmd pf))))
+
 ;;; latexmk -c を実行（TeX の不用なファイルを削除）
 (defun MyTeX-latexmk-cleanup ()
   (interactive)
@@ -119,6 +134,30 @@
 (defun MyTeX-switch-to-previousbuffer ()
   (interactive)
   (switch-to-buffer nil))
+
+
+;;; say コマンドで文を読み上げる
+(defun MyTeX-speech (b e)
+  "Convert text to audible speech by /usr/bin/say of OSX."
+  (interactive "r")
+  (let (str)
+    (if (eq mark-active 'nil)
+	(progn (setq b (save-excursion (re-search-backward "^\\ *%")
+				       (point)))
+	       (setq e (save-excursion (re-search-forward "^\\ *%")
+				       (point)))))
+    (setq str (buffer-substring-no-properties b e))
+    (setq str (replace-regexp-in-string "\\\\%" "percent" str))
+    (setq str (replace-regexp-in-string "%[^\n]*" "" str))
+    (setq str (replace-regexp-in-string "\\\\[a-zA-Z]+{" " " str))
+    (setq str (replace-regexp-in-string "[$_^\n()~{}|;`]" " " str))
+    (setq str (replace-regexp-in-string "\\ +" " " str))
+    (message str)
+    (if (eq (process-status "speech") 'run)
+	(delete-process "speech"))
+    (process-kill-without-query
+     (start-process-shell-command "speech" nil 
+				  "/usr/bin/say -r 250" (concat "\"" str "\"" )))))
 
 ;;; 少しだけスキップ
 (defun MyTeX-jump-to-next ()
@@ -196,6 +235,23 @@
   (process-kill-without-query
    (start-process-shell-command "Open BibDesk.app" nil "open -a BibDesk" )))
 
+;;; \cite{foo} から foo.pdf を開く 
+;;; citekey と PDFファイルの名前が同じで、PDFファイルが1つの場所に置かれている必要がある。
+(defun MyTeX-open-article ()
+  "Open PDF file by the cite key: \cite{foo} -> open foo.pdf"
+  (interactive)
+  (let* ((s (save-excursion
+	      (skip-chars-backward "^{,")
+	      (point)))
+	 (e (save-excursion
+	      (skip-chars-forward "^},")
+	      (point)))
+	 (pdfdir "~/Documents/Dropbox/Papers/pdf/")
+	 (pdffile (concat pdfdir
+			  (buffer-substring-no-properties s e) ".pdf"))
+	 (process-kill-without-query
+	  (start-process-shell-command "Open the article" nil "open" pdffile)))))
+
 ;;; クラッシュするキーバインドを無効にする。
 (define-key global-map [?\s-p] nil) ; ns-print-buffer
 (define-key global-map [?\s-S] nil) ; ns-write-file-using-panel
@@ -208,7 +264,8 @@
 (define-key global-map [?\s-O] 'MyTool-show-in-finder)
 (define-key global-map [?\s-Ï] 'MyTool-open-folder-in-finder) 
 (define-key global-map [?\M-\s-F] 'MyTool-open-folder-in-finder) ; option key = meta
-
+(define-key global-map [?\s-˙] 'ns-do-hide-others)
+(define-key global-map [?\s-r] 'MyTeX-speech)
 
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
@@ -229,12 +286,18 @@
 	     (define-key YaTeX-mode-map "\t" 'latex-indent-command)
 	     (define-key YaTeX-mode-map (kbd "C-c TAB") 'latex-indent-region-command)
 	     (define-key YaTeX-mode-map [?\s-_] 'MyTeX-insert-subscript_rm)
+	     (define-key YaTeX-mode-map [?\C-\s-J] 'YaTeX-goto-corresponding-*)
 	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
 	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
+	     (define-key YaTeX-mode-map [?\s-H] 'YaTeX-display-hierarchy)
 	     (define-key YaTeX-mode-map [?\s-1] 'YaTeX-visit-main)
 	     (define-key YaTeX-mode-map [?\s-2] 'MyTeX-switch-to-previousbuffer)
 	     (define-key YaTeX-mode-map [?\M-\s-B] 'MyTool-open-bibdesk)
 	     (define-key YaTeX-mode-map [?\s-ı] 'MyTool-open-bibdesk)
+	     (define-key YaTeX-mode-map [?\M-\s-P] 'MyTeX-open-PreviewApp)
+	     (define-key YaTeX-mode-map [?\s-∏] 'MyTeX-open-PreviewApp)
+	     (define-key YaTeX-mode-map [?\s-\)] 'MyTeX-speech-region)
+	     (define-key YaTeX-mode-map [?\s-C] 'MyTeX-open-article)
 	     ))
 
 ;;;; TeX ファイルを一括で開き YaTeX-parent-file を設定する
