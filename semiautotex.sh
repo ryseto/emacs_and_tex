@@ -175,11 +175,11 @@ case "$mode" in
 ### BibTeX mode
     "bib" )
 # Preprocess
-	$LATEXDRAFT $@ || exit 1
+	$LATEXDRAFT $@
 # Main process
 	$BIBTEX ${JOBNAME}
 # Postprocess
-	$LATEXDRAFT $@
+	$LATEXDRAFT $@ || exit 1
 	checksum=`md5 -q ${JOBNAME}.aux`
 	$LATEX $@
 	message="typeset(d)+BibTeX+typeset(d)+typeset"
