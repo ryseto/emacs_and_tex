@@ -252,11 +252,6 @@
 	 (process-kill-without-query
 	  (start-process-shell-command "Open the article" nil "open" pdffile)))))
 
-;;; クラッシュするキーバインドを無効にする。
-(define-key global-map [?\s-p] nil) ; ns-print-buffer
-(define-key global-map [?\s-S] nil) ; ns-write-file-using-panel
-(define-key global-map [?\s-o] nil) ; ns-open-file-using-panel
-
 ;;; グローバルなキーバインドの設定
 (define-key global-map (kbd "C-c k") 'MyTool-file-complete)
 (define-key global-map (kbd "C-;") 'ispell-word)
