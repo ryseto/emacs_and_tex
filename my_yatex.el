@@ -20,6 +20,7 @@
 ;;; command + "_"                  : "_{\mathrm{}}" を挿入
 ;;; === グローバル ===
 ;;; C-c w                          : OSX の辞書で調べる
+;;; C-c g                          : 選択したテキストをGoogleで検索
 ;;; C-c k                          : ファイル名の補完
 ;;; C-;                            : スペルチェック
 ;;; shift + command + O            : Finder に表示
@@ -80,26 +81,25 @@
 ;;; Emacs から Skim へ
 ;;; この機能を使うためには、
 ;;; pdflatex/platex にオプション -synctex=1 が必要
+;;;
+;;; Thanks to Tsuchiya-san's corrections (yatex ML [yatex:04810,04811])
 (defun skim-forward-search ()
   (interactive)
-  (let* ((ctf (buffer-name))
-         (mtf)
-         (pf)
-         (ln (format "%d" (line-number-at-pos)))
-         (cmd "/Applications/Skim.app/Contents/SharedSupport/displayline -g")
-         (args))
-    (if (YaTeX-main-file-p)
-        (setq mtf (buffer-name))
-      (progn
-        (if (equal YaTeX-parent-file nil)
-            (save-excursion
-              (YaTeX-visit-main t)))
-        (setq mtf YaTeX-parent-file)))
-    (setq pf (concat (car (split-string mtf "\\.")) ".pdf"))
-    (setq args (concat ln " " pf " " ctf))
-    (message args)
-    (process-kill-without-query
-     (start-process-shell-command "SyncTeX with Skim" nil cmd args))))
+  (process-kill-without-query
+   (start-process  
+    "displayline"
+    nil
+    "/Applications/Skim.app/Contents/SharedSupport/displayline"
+    (number-to-string (save-restriction
+                        (widen)
+                        (count-lines (point-min) (point))))
+    (expand-file-name
+     (concat (file-name-sans-extension (or YaTeX-parent-file
+                                           (save-excursion
+                                             (YaTeX-visit-main t)
+                                             buffer-file-name)))
+             ".pdf"))
+    buffer-file-name)))
 
 ;;;; Preview.app で開く
 (defun MyTeX-open-PreviewApp ()
@@ -194,28 +194,28 @@
       (delete-region p s)
       (insert dir res)))))
 
+(defun MyTool-search-google()
+  "Search by google"
+  (interactive)
+  (let* ((str (string-word-or-region)))
+    (browse-url
+     (concat "http://google.com/search?q=\"" str "\""))))
+
+(defun MyTool-search-googlescholar()
+  "Search string by google scholar"
+  (interactive)
+  (let* ((str (string-word-or-region)))
+    (browse-url
+     (concat "http://scholar.google.com/scholar?q=\"" str "\""))))
+  
 ;;; OSX の辞書で調べる(Sakito さん)
 ;;; http://sakito.jp/mac/dictionary.html
-(defun MyTool-osx-dictionary ()
-  "dictionary.app"
+(defun MyTool-lookup-dictionary-osx()
+  "Look up the word by Dictionary.app of Mac OS X"
   (interactive)
-  (let ((editable (not buffer-read-only))
-        (pt (save-excursion (mouse-set-point last-nonmenu-event)))
-        beg end)
-    
-    (if (and mark-active
-             (<= (region-beginning) pt) (<= pt (region-end)) )
-        (setq beg (region-beginning)
-              end (region-end))
-      (save-excursion
-        (goto-char pt)
-	(backward-char 1)
-        (setq end (progn (forward-word) (point)))
-        (setq beg (progn (backward-word) (point)))
-        ))
-    (browse-url
-     (concat "dict:///"
-             (url-hexify-string (buffer-substring-no-properties beg end))))))
+  (let* ((str (url-hexify-string (string-word-or-region))))
+    (browse-url (concat "dict://" str ))))
+
 
 ;;; Finder に表示
 (defun MyTool-show-in-finder ()
@@ -258,7 +258,6 @@
 (define-key global-map [?\s-o] nil) ; ns-open-file-using-panel
 
 ;;; グローバルなキーバインドの設定
-(define-key global-map (kbd "C-c w") 'MyTool-osx-dictionary)
 (define-key global-map (kbd "C-c k") 'MyTool-file-complete)
 (define-key global-map (kbd "C-;") 'ispell-word)
 (define-key global-map [?\s-O] 'MyTool-show-in-finder)
@@ -266,6 +265,9 @@
 (define-key global-map [?\M-\s-F] 'MyTool-open-folder-in-finder) ; option key = meta
 (define-key global-map [?\s-˙] 'ns-do-hide-others)
 (define-key global-map [?\s-r] 'MyTeX-speech)
+(define-key global-map (kbd "C-c w") 'MyTool-lookup-dictionary-osx)
+(define-key global-map (kbd "C-c g") 'MyTool-search-google)
+(define-key global-map (kbd "C-c G") 'MyTool-search-googlescholar)
 
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
@@ -300,27 +302,3 @@
 	     (define-key YaTeX-mode-map [?\s-C] 'MyTeX-open-article)
 	     ))
 
-;;;; TeX ファイルを一括で開き YaTeX-parent-file を設定する
-;;; TeX ファイルのディレクトリ内に mytexconfig というファイルを用意し、
-;;; MyTeX-file-list にファイル名を連ねる。
-;;;  (setq MyTeX-file-list
-;;;      '("foo_main.tex" "foo_included_1.tex" "foo_included_2.tex" ))
-;;; TeX ファイルを開く時にこのリストの先頭にあるファイルを YaTeX-parent-file として
-;;; 他の全てのファイルも同時にバッファに開く。
-;;; (YaTeX 標準の機能でも、C-c C-d に割り当てられている
-;;; YaTeX-display-hierarchy を実行すると input/include されているファイルの
-;;; 一覧が見れると同時にそれらを一括で開くことができる。)
-(defun MyTeX-initial-setup ()
-  (interactive)
-  (if (file-exists-p "mytexconfig")
-      (progn
-	(load-file "mytexconfig")
-	(dolist (file MyTeX-file-list)
-	  (find-file-noselect file))
-	(setq YaTeX-parent-file (car MyTeX-file-list))
-	(message "MyTeX: initial setup done.")
-	)))
-;;; YaTeX 起動時に MyTeX-initial-setup を実行
-(add-hook 'yatex-mode-hook
-      '(lambda()
-	 (MyTeX-initial-setup)))
