@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2012-04-01 17:31:05 seto>
+;; Time-stamp: <2013-07-03 10:39:43 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -25,11 +25,10 @@
 ;;; C-;                            : スペルチェック
 ;;; shift + command + O            : Finder に表示
 ;;; option + shift + command + F   : Finder でフォルダを開く
+;;; option + shift + command + T   : Terminal/iTerm でフォルダを開く
 ;;; option + command + H           : 実行されているその他すべてのアプリケーションのウインドウを隠す
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; テスト版の YaTeX を使っているのでそちらが優先してロードされるようにする。
-;;; 現在 1.75.3 を使用中。
 (setq load-path (cons (expand-file-name "~/.emacs.d/yatex") load-path))
 
 (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
@@ -43,19 +42,20 @@
 
 ;;; インデント (YaTeXのインデントを使わない）
 ;;; http://www.hit.ac.jp/~wachi/misc/latexindent.html
-(autoload 'latex-indent-command "~/.emacs.d/lisp/latex-indent"
+(autoload 'latex-indent-command "~/Dropbox/emacs/latex-indent"
   "Indent current line accroding to LaTeX block structure.")
-(autoload 'latex-indent-region-command "~/.emacs.d/lisp/latex-indent"
+(autoload 'latex-indent-region-command "~/Dropbox/emacs/latex-indent"
   "Indent each line in the region according to LaTeX block structure.")
 
 ;;; シェルスクリプト SemiAutoTeX でタイプセット
-;;; https://github.com/ryseto/emacs_and_tex/blob/master/semiautotex.sh
-(setq tex-command "semiautotex.sh"
-      bibtex-command "semiautotex.sh -b"
-      makeindex-command "semiautotex.sh -i"
-      YaTeX-typeset-auto-rerun nil ; rerun 機能を無効 (1.75.x 以降)
+(setq tex-command "~/Dropbox/emacs_and_tex/semiautotex.sh")
+;;(setq tex-command "/usr/local/texlive/2013/bin/x86_64-darwin/latexmk")
+(setq bibtex-command "~/Dropbox/emacs_and_tex/semiautotex.sh -b"
+      makeindex-command "~/Dropbox/emacs_and_tex/semiautotex.sh -i"
+      YaTeX-typeset-auto-rerun nil ; rerun 機能を無効
       dvi2-command "open -a Skim" ; PDF プレビュアとして Skim.app を使う
       )
+
 ;;; YaTeX カスタマイズ変数
 (setq YaTeX-inhibit-prefix-letter t ; YaTeXキーバインドを C-c ? から C-c C-? に変更
       YaTeX-kanji-code nil ; 文字コードを変更しない
@@ -63,19 +63,19 @@
       YaTeX-default-pop-window-height 7 ; タイプセットの時のウィンドウの高さ
       YaTeX-skip-default-reader  t ; 補完入力でミニバッファから入力しない
       YaTeX-latex-message-code 'utf-8
-      YaTeX-template-file "~/Documents/Dropbox/template/template.tex" ; 新規作成時のテンプレート
-      YaTeX::ref-labeling-section-level 3 ; ref 補完で subsection などを検索
+      YaTeX-template-file "~/Dropbox/emacs_and_tex/template.tex" ; 新規作成時のテンプレート
+      YaTeX::ref-labeling-section-level 4 ; ref 補完で subsubsection までリストアップ
       )
 
 ;;; begin型「C-c C-b 1文字」補完のカスタマイズ
 (setq yatex-mode-load-hook
       '(lambda() 
-	 (YaTeX-define-begend-key "be" "equation") ; デフォルトは enumerate
-	 (YaTeX-define-begend-key "bE" "enumerate") ; デフォルトは equation
-	 (YaTeX-define-begend-key "ba" "align")
-	 (YaTeX-define-begend-key "bg" "gather")
-	 (YaTeX-define-begend-key "bf" "figure")
-	 ))
+         (YaTeX-define-begend-key "be" "equation") ; デフォルトは enumerate
+         (YaTeX-define-begend-key "bE" "enumerate") ; デフォルトは equation
+         (YaTeX-define-begend-key "ba" "align")
+         (YaTeX-define-begend-key "bg" "gather")
+         (YaTeX-define-begend-key "bf" "figure")
+         ))
 
 ;;;; Skim PDF カーソル位置表示
 ;;; Emacs から Skim へ
@@ -135,7 +135,6 @@
   (interactive)
   (switch-to-buffer nil))
 
-
 ;;; say コマンドで文を読み上げる
 (defun MyTeX-speech (b e)
   "Convert text to audible speech by /usr/bin/say of OSX."
@@ -159,20 +158,6 @@
      (start-process-shell-command "speech" nil 
 				  "/usr/bin/say -r 250" (concat "\"" str "\"" )))))
 
-;;; 少しだけスキップ
-(defun MyTeX-jump-to-next ()
-  (interactive)
-  (cond
-   ((= (following-char) ?$ )  (skip-chars-forward "$") )
-   ((= (following-char) 40 ) (skip-chars-forward "(") )
-   ((= (following-char) 41 ) (skip-chars-forward ")") )
-   ((= (following-char) 91 ) (skip-chars-forward "["))
-   ((= (following-char) 93 ) (skip-chars-forward "]"))
-   (t
-    (skip-chars-forward "^{}()[]\n\$")
-    (skip-chars-forward "}")
-    (skip-chars-forward "{")
-    )))
 
 ;;; ファイル名の補完(広瀬さん)
 (defun MyTool-file-complete ()
@@ -194,6 +179,7 @@
       (delete-region p s)
       (insert dir res)))))
 
+;;; 選択範囲を google で検索
 (defun MyTool-search-google()
   "Search by google"
   (interactive)
@@ -201,6 +187,7 @@
     (browse-url
      (concat "http://google.com/search?q=\"" str "\""))))
 
+;;; 選択範囲を google scholar で検索
 (defun MyTool-search-googlescholar()
   "Search string by google scholar"
   (interactive)
@@ -216,6 +203,21 @@
   (let* ((str (url-hexify-string (string-word-or-region))))
     (browse-url (concat "dict://" str ))))
 
+(defun string-word-or-region ()
+  "If region is selected, this returns the string of the region. If not, this returns the string of the word on which the cursor is."
+  (let ((editable (not buffer-read-only))
+        (pt (save-excursion (mouse-set-point last-nonmenu-event)))
+        beg end)
+    (if (and mark-active
+             (<= (region-beginning) pt) (<= pt (region-end)) )
+        (setq beg (region-beginning)
+              end (region-end))
+      (save-excursion
+        (goto-char pt)
+        (backward-char 1)
+        (setq end (progn (forward-word) (point)))
+        (setq beg (progn (backward-word) (point)))))
+    (buffer-substring-no-properties beg end)))
 
 ;;; Finder に表示
 (defun MyTool-show-in-finder ()
@@ -224,10 +226,27 @@
    (start-process-shell-command "Show in Finder" nil "open -R" (buffer-file-name))))
 
 ;;; Finder でフォルダを開く
+;; ショートカット: ⌘-option-shift-F
+;; (ショートカットは USキーボードで確認）
+(define-key global-map [?\s-Ï] 'MyTool-open-folder-in-finder)
 (defun MyTool-open-folder-in-finder ()
+  "open -a Finder.app CURRENT-DIRECTORY"
   (interactive)
   (process-query-on-exit-flag 
    (start-process-shell-command "open folder in Finder" nil "open .")))
+
+;;; Terminal/iTerm でフォルダを開く
+;; ショートカット: ⌘-option-shift-T
+;; (ショートカットは USキーボードで確認）
+(define-key global-map [?\s-ˇ] 'MyTool-open-Terminal)
+(defun MyTool-open-Terminal()
+  "open -a Terminal.app CURRENT-DIRECTORY"
+  (interactive)
+  (let* (;;(cmd "open -a Terminal.app")
+         (cmd "open -a iTerm.app"))
+    (process-kill-without-query
+     (start-process-shell-command 
+      "Open directory" nil cmd default-directory))))
 
 ;;; BibDesk を開く
 (defun MyTool-open-bibdesk ()
@@ -252,6 +271,43 @@
 	 (process-kill-without-query
 	  (start-process-shell-command "Open the article" nil "open" pdffile)))))
 
+;;; テキスト（英語）の読み上げ(TeXに対応)
+;;; Convert text to audible speech by /usr/bin/say (Emacs + OSX) 
+(defun MyTeX-speech ()
+  "Convert text to audible speech by /usr/bin/say of OSX."
+  (interactive)
+  (let (b e s
+	  (block-sep-str "^\*\\|^\\ *%\\|^\\ *\n\\|\\\\item\\|\\\\begin\\|\\\\end"))
+    (if (eq (process-status "speech") 'run)
+	(delete-process "speech")
+      (progn
+	(if mark-active
+	    (setq b (mark) e (point))
+	  (setq b (save-excursion
+		    (progn
+		      (re-search-backward block-sep-str (point-min) 1)
+		      (point)))
+		e (save-excursion
+		    (progn
+		      (re-search-forward block-sep-str (point-max) 1)
+		      (point)))))
+	(setq s (buffer-substring-no-properties b e)
+	      s (replace-regexp-in-string "\\\\%" "percent" s)
+	      s (replace-regexp-in-string "$\\\\mu$m" "micrometer" s)
+	      s (replace-regexp-in-string "\\\\item" " " s)
+	      s (replace-regexp-in-string "\\\\begin" " " s)
+	      s (replace-regexp-in-string "\\\\end" " " s)
+	      s (replace-regexp-in-string "\\\\," " " s)
+	      s (replace-regexp-in-string "%[^\n]*" "" s)
+	      s (replace-regexp-in-string 
+             "\\\\[a-zA-Z]+{\\|[$\\\\_^~{}`\"*\n]" " " s)
+	      s (replace-regexp-in-string "\\ +" " " s))
+	(message s)
+	(process-kill-without-query
+	 (start-process-shell-command "speech" nil
+				      "/usr/bin/say" (concat "\"" s "\"" )))))))
+
+
 ;;; グローバルなキーバインドの設定
 (define-key global-map (kbd "C-c k") 'MyTool-file-complete)
 (define-key global-map (kbd "C-;") 'ispell-word)
@@ -263,37 +319,37 @@
 (define-key global-map (kbd "C-c w") 'MyTool-lookup-dictionary-osx)
 (define-key global-map (kbd "C-c g") 'MyTool-search-google)
 (define-key global-map (kbd "C-c G") 'MyTool-search-googlescholar)
+(define-key global-map [?\s-r] 'MyTeX-speech)
 
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
           '(lambda ()
-	     (require 'yatexprc)
-	     (turn-off-auto-fill) ; 勝手に改行しない
-	     (define-key YaTeX-mode-map [?\s-t] 'YaTeX-typeset-buffer)
-	     (define-key YaTeX-mode-map [?\s-b] 'YaTeX-typeset-buffer)
-	     (define-key YaTeX-mode-map [?\s-P] 'YaTeX-preview)
-	     (define-key YaTeX-mode-map [?\s-R] 'skim-forward-search)
-	     (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
-	     (define-key YaTeX-mode-map [?\s-B] 
-	       (lambda 	() (interactive)
-		 (YaTeX-call-builtin-on-file "BIBTEX" bibtex-command)))
-	     (define-key YaTeX-mode-map [?\s-I]
-	       (lambda 	() (interactive)
-		 (YaTeX-call-builtin-on-file "MAKEINDEX" makeindex-command)))
-	     (define-key YaTeX-mode-map "\t" 'latex-indent-command)
-	     (define-key YaTeX-mode-map (kbd "C-c TAB") 'latex-indent-region-command)
-	     (define-key YaTeX-mode-map [?\s-_] 'MyTeX-insert-subscript_rm)
-	     (define-key YaTeX-mode-map [?\C-\s-J] 'YaTeX-goto-corresponding-*)
-	     (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
-	     (define-key YaTeX-mode-map (kbd "C-c j") 'MyTeX-jump-to-next)
-	     (define-key YaTeX-mode-map [?\s-H] 'YaTeX-display-hierarchy)
-	     (define-key YaTeX-mode-map [?\s-1] 'YaTeX-visit-main)
-	     (define-key YaTeX-mode-map [?\s-2] 'MyTeX-switch-to-previousbuffer)
-	     (define-key YaTeX-mode-map [?\M-\s-B] 'MyTool-open-bibdesk)
-	     (define-key YaTeX-mode-map [?\s-ı] 'MyTool-open-bibdesk)
-	     (define-key YaTeX-mode-map [?\M-\s-P] 'MyTeX-open-PreviewApp)
-	     (define-key YaTeX-mode-map [?\s-∏] 'MyTeX-open-PreviewApp)
-	     (define-key YaTeX-mode-map [?\s-\)] 'MyTeX-speech-region)
-	     (define-key YaTeX-mode-map [?\s-C] 'MyTeX-open-article)
-	     ))
+             (require 'yatexprc)
+             (turn-off-auto-fill) ; 勝手に改行しない
+             (define-key YaTeX-mode-map [?\s-t] 'YaTeX-typeset-buffer)
+             (define-key YaTeX-mode-map [?\s-b] 'YaTeX-typeset-buffer)
+             (define-key YaTeX-mode-map [?\s-P] 'YaTeX-preview)
+             (define-key YaTeX-mode-map [?\s-R] 'skim-forward-search)
+             (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
+             (define-key YaTeX-mode-map [?\s-B] 
+               (lambda 	() (interactive)
+                 (YaTeX-call-builtin-on-file "BIBTEX" bibtex-command)))
+             (define-key YaTeX-mode-map [?\s-I]
+               (lambda 	() (interactive)
+                 (YaTeX-call-builtin-on-file "MAKEINDEX" makeindex-command)))
+             (define-key YaTeX-mode-map "\t" 'latex-indent-command)
+             (define-key YaTeX-mode-map (kbd "C-c TAB") 'latex-indent-region-command)
+             (define-key YaTeX-mode-map [?\s-_] 'MyTeX-insert-subscript_rm)
+             (define-key YaTeX-mode-map [?\C-\s-J] 'YaTeX-goto-corresponding-*)
+             (define-key YaTeX-mode-map (kbd "C-c d") 'MyTeX-latexmk-cleanup)
+             (define-key YaTeX-mode-map [?\s-H] 'YaTeX-display-hierarchy)
+             (define-key YaTeX-mode-map [?\s-1] 'YaTeX-visit-main)
+             (define-key YaTeX-mode-map [?\s-2] 'MyTeX-switch-to-previousbuffer)
+             (define-key YaTeX-mode-map [?\M-\s-B] 'MyTool-open-bibdesk)
+             (define-key YaTeX-mode-map [?\s-ı] 'MyTool-open-bibdesk)
+             (define-key YaTeX-mode-map [?\M-\s-P] 'MyTeX-open-PreviewApp)
+             (define-key YaTeX-mode-map [?\s-∏] 'MyTeX-open-PreviewApp)
+             (define-key YaTeX-mode-map [?\s-\)] 'MyTeX-speech-region)
+             (define-key YaTeX-mode-map [?\s-C] 'MyTeX-open-article)
+             ))
 
