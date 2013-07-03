@@ -100,10 +100,10 @@ MD5LOGDIR="${HOME}/Library/Caches/TeXMD5Dir"
 [ -d ${MD5LOGDIR} ] || mkdir -p ${MD5LOGDIR}
 
 # Default configuration
-LATEX="pdflatex -synctex=1"
-LATEXDRAFT="pdflatex -draftmode"
-BIBTEX="bibtex"
-MAKEINDEX="makeindex"
+LATEX="/usr/local/texlive/2013/bin/x86_64-darwin/pdflatex -synctex=1"
+LATEXDRAFT="/usr/local/texlive/2013/bin/x86_64-darwin/pdflatex -draftmode"
+BIBTEX="/usr/local/texlive/2013/bin/x86_64-darwin/bibtex"
+MAKEINDEX="/usr/local/texlive/2013/bin/x86_64-darwin/makeindex"
 DVIPDF=""
 #DVIPDF="dvipdfm"
 PDFVIEWER="skim_reload.sh -g"
@@ -140,10 +140,10 @@ JOBNAME=${JOBNAME%.*}
 
 # タイプセットの回数を記録する
 if [ -f ${MD5LOGDIR}/${JOBNAME}.stat ]; then
-    cnt=0;
-    while read buf ; do
-	typeset_stat[$cnt]=$buf
-	cnt=$(expr $cnt + 1)
+	cnt=0;
+	while read buf ; do
+	    typeset_stat[$cnt]=$buf
+		cnt=$(expr $cnt + 1)
     done < ${MD5LOGDIR}/${JOBNAME}.stat
 else
     typeset_stat[0]=0
@@ -232,3 +232,5 @@ if [ "$PDFVIEWER" != "" ]; then
 fi
 
 echo "t${typeset_stat[0]} b${typeset_stat[1]} i${typeset_stat[2]}"
+
+#cp ${JOBNAME}.pdf ~/Dropbox/Public/
