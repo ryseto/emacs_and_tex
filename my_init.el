@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2013-07-03 11:09:59 seto>
+;; Time-stamp: <2013-07-05 10:49:57 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -7,12 +7,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;; path setting
-(setq exec-path
-      (append
-       (list "~/Dropbox/bin" "/usr/local/bin" "/usr/osxws/bin/" ) exec-path))
-
-(setenv "PATH" 
-        (concat '"~/Dropbox/bin:/usr/local/bin:/usr/osxws/bin" (getenv "PATH")))
+;;; http://sakito.jp/emacs/emacsshell.html#path
+(dolist (dir (list
+              "/sbin"
+              "/usr/sbin"
+              "/bin"
+              "/usr/bin"
+              "/usr/local/bin"
+              "/usr/local/texlive/2013/bin/x86_64-darwin"
+              (expand-file-name "~/bin")
+              (expand-file-name "~/Dropbox/bin")
+              (expand-file-name "~/Dropbox/emacs_and_tex")
+              ))
+  (when (and (file-exists-p dir) (not (member dir exec-path)))
+    (setenv "PATH" (concat dir ":" (getenv "PATH")))
+    (setq exec-path (append (list dir) exec-path))))
 
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/")
 

@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2013-07-03 10:39:43 seto>
+;; Time-stamp: <2013-07-05 10:37:02 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -48,10 +48,10 @@
   "Indent each line in the region according to LaTeX block structure.")
 
 ;;; シェルスクリプト SemiAutoTeX でタイプセット
-(setq tex-command "~/Dropbox/emacs_and_tex/semiautotex.sh")
+(setq tex-command "semiautotex.sh")
 ;;(setq tex-command "/usr/local/texlive/2013/bin/x86_64-darwin/latexmk")
-(setq bibtex-command "~/Dropbox/emacs_and_tex/semiautotex.sh -b"
-      makeindex-command "~/Dropbox/emacs_and_tex/semiautotex.sh -i"
+(setq bibtex-command "semiautotex.sh -b"
+      makeindex-command "semiautotex.sh -i"
       YaTeX-typeset-auto-rerun nil ; rerun 機能を無効
       dvi2-command "open -a Skim" ; PDF プレビュアとして Skim.app を使う
       )
