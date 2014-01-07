@@ -1,23 +1,33 @@
-\documentclass[12pt]{article}
-\usepackage{amsmath,amssymb}
+\RequirePackage[l2tabu, orthodox]{nag}
+\documentclass[fontsize=11pt]{scrartcl}
+\usepackage{amsmath,amsfonts,amsthm}
 \usepackage{bm}
+\usepackage[a4paper]{geometry}
+\usepackage[protrusion=true,expansion=true]{microtype}
+\usepackage{siunitx}
+\usepackage{xcolor}
+\usepackage[pdftex]{graphicx}
 \usepackage[pdftex,bookmarks,colorlinks]{hyperref}
-\usepackage[pdftex]{graphicx}	% required for `\includegraphics' (yatex added)
-\usepackage{datetime}
-\usepackage{natbib}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage{newtxtext}
 \usepackage[varg]{newtxmath}
-\bibliographystyle{unsrtnat}
-\newcommand{\tabref}[1]{\tablename~\ref{#1}}
-\newcommand{\secref}[1]{sect.~\ref{#1}}
-\newcommand{\figref}[1]{\figurename~\ref{#1}}
+\usepackage{booktabs}
+\usepackage{datetime}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{cleveref}
+\usepackage[numbers]{natbib}
+\bibliographystyle{abbrvnat}
+\setlist{itemsep=-3pt}
 \title{Title}
 \date{\shortdate\today \, \ampmtime }
 \author{Ryohei Seto}
 \begin{document}
 \maketitle
 
-
+hello!
 
 \bibliography{/Users/seto/Dropbox/Papers/rse}
 \end{document}
