@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2013-07-05 11:11:10 seto>
+;; Time-stamp: <2014-04-20 07:55:14 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -48,7 +48,7 @@
   "Indent each line in the region according to LaTeX block structure.")
 
 ;;; シェルスクリプト SemiAutoTeX でタイプセット
-(setq tex-command "semiautotex.sh")
+(setq tex-command "latexmk")
 ;;(setq tex-command "/usr/local/texlive/2013/bin/x86_64-darwin/latexmk")
 (setq bibtex-command "semiautotex.sh -b"
       makeindex-command "semiautotex.sh -i"
@@ -219,6 +219,18 @@
         (setq beg (progn (backward-word) (point)))))
     (buffer-substring-no-properties beg end)))
 
+;;; BibDesk で開く
+(defun MyTeX-open-item-BibDesk ()
+  "Open Bibdesk with the cite key"
+  (interactive)
+  (let* ((s (save-excursion
+	      (skip-chars-backward "^{,")
+	      (point)))
+	 (e (save-excursion
+	      (skip-chars-forward "^},")
+	      (point))))
+    (browse-url (concat "x-bdsk://" (buffer-substring-no-properties s e)))))
+
 ;;; Finder に表示
 (defun MyTool-show-in-finder ()
   (interactive)
@@ -324,18 +336,32 @@
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
           '(lambda ()
-             (require 'yatexprc)
+	     ;; (require 'yatexprc)
              (turn-off-auto-fill) ; 勝手に改行しない
              (define-key YaTeX-mode-map [?\s-t] 'YaTeX-typeset-buffer)
-             (define-key YaTeX-mode-map [?\s-b] 'YaTeX-typeset-buffer)
-             (define-key YaTeX-mode-map [?\s-P] 'YaTeX-preview)
+	     (define-key YaTeX-mode-map [?\s-t] 
+               (lambda 	() (interactive)
+		 (require 'yatexprc)
+		 (YaTeX-typeset-buffer)))
+	     (define-key YaTeX-mode-map [?\s-b] 
+               (lambda 	() (interactive)
+		 (require 'yatexprc)
+		 (YaTeX-typeset-buffer)))
+	     ;; (define-key YaTeX-mode-map [?\s-b] 'YaTeX-typeset-buffer)
+             (define-key YaTeX-mode-map [?\s-P]
+               (lambda 	() (interactive)
+		 (require 'yatexprc)
+		 (YaTeX-preview)))
              (define-key YaTeX-mode-map [?\s-R] 'skim-forward-search)
+	     (define-key YaTeX-mode-map [?\s-J] 'MyTeX-open-item-BibDesk)
              (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
              (define-key YaTeX-mode-map [?\s-B] 
                (lambda 	() (interactive)
+		 (require 'yatexprc)
                  (YaTeX-call-builtin-on-file "BIBTEX" bibtex-command)))
              (define-key YaTeX-mode-map [?\s-I]
                (lambda 	() (interactive)
+		 (require 'yatexprc)
                  (YaTeX-call-builtin-on-file "MAKEINDEX" makeindex-command)))
              (define-key YaTeX-mode-map "\t" 'latex-indent-command)
              (define-key YaTeX-mode-map (kbd "C-c TAB") 'latex-indent-region-command)
