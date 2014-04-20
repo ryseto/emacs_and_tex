@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-04-20 07:55:14 seto>
+;; Time-stamp: <2014-04-20 08:09:05 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -336,9 +336,7 @@
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
           '(lambda ()
-	     ;; (require 'yatexprc)
              (turn-off-auto-fill) ; 勝手に改行しない
-             (define-key YaTeX-mode-map [?\s-t] 'YaTeX-typeset-buffer)
 	     (define-key YaTeX-mode-map [?\s-t] 
                (lambda 	() (interactive)
 		 (require 'yatexprc)
@@ -347,14 +345,10 @@
                (lambda 	() (interactive)
 		 (require 'yatexprc)
 		 (YaTeX-typeset-buffer)))
-	     ;; (define-key YaTeX-mode-map [?\s-b] 'YaTeX-typeset-buffer)
              (define-key YaTeX-mode-map [?\s-P]
                (lambda 	() (interactive)
 		 (require 'yatexprc)
 		 (YaTeX-preview)))
-             (define-key YaTeX-mode-map [?\s-R] 'skim-forward-search)
-	     (define-key YaTeX-mode-map [?\s-J] 'MyTeX-open-item-BibDesk)
-             (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
              (define-key YaTeX-mode-map [?\s-B] 
                (lambda 	() (interactive)
 		 (require 'yatexprc)
@@ -363,6 +357,9 @@
                (lambda 	() (interactive)
 		 (require 'yatexprc)
                  (YaTeX-call-builtin-on-file "MAKEINDEX" makeindex-command)))
+	     (define-key YaTeX-mode-map [?\s-R] 'skim-forward-search)
+	     (define-key YaTeX-mode-map [?\s-J] 'MyTeX-open-item-BibDesk)
+             (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
              (define-key YaTeX-mode-map "\t" 'latex-indent-command)
              (define-key YaTeX-mode-map (kbd "C-c TAB") 'latex-indent-region-command)
              (define-key YaTeX-mode-map [?\s-_] 'MyTeX-insert-subscript_rm)
