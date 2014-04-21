@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-04-20 08:09:05 seto>
+;; Time-stamp: <2014-04-20 22:52:08 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -348,7 +348,7 @@
              (define-key YaTeX-mode-map [?\s-P]
                (lambda 	() (interactive)
 		 (require 'yatexprc)
-		 (YaTeX-preview)))
+		 (YaTeX-preview "open -a Skim" YaTeX-parent-file)))
              (define-key YaTeX-mode-map [?\s-B] 
                (lambda 	() (interactive)
 		 (require 'yatexprc)
