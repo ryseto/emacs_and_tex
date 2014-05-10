@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-04-20 22:52:08 seto>
+;; Time-stamp: <2014-05-10 12:21:24 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -203,8 +203,18 @@
   (let* ((str (url-hexify-string (string-word-or-region))))
     (browse-url (concat "dict://" str ))))
 
+;;; 単語の発音
+(defun MyTool-speech-word()
+  "Speak words."
+  (interactive)
+  (let* ((str (url-hexify-string (string-word-or-region))))
+    (process-kill-without-query
+     (start-process-shell-command "speech" nil 
+				  "/usr/bin/say -r 150" (concat "\"" str "\"" )))))
+
 (defun string-word-or-region ()
-  "If region is selected, this returns the string of the region. If not, this returns the string of the word on which the cursor is."
+  "If a region is selected, the text string of the region is returned.
+  Otherwise, the text string of the word is returnd."
   (let ((editable (not buffer-read-only))
         (pt (save-excursion (mouse-set-point last-nonmenu-event)))
         beg end)
@@ -331,6 +341,8 @@
 (define-key global-map (kbd "C-c w") 'MyTool-lookup-dictionary-osx)
 (define-key global-map (kbd "C-c g") 'MyTool-search-google)
 (define-key global-map (kbd "C-c G") 'MyTool-search-googlescholar)
+(define-key global-map (kbd "C-c s") 'MyTool-speech-word)
+
 (define-key global-map [?\s-r] 'MyTeX-speech)
 
 ;;; YaTeX用キーバインドの設定
@@ -348,7 +360,9 @@
              (define-key YaTeX-mode-map [?\s-P]
                (lambda 	() (interactive)
 		 (require 'yatexprc)
-		 (YaTeX-preview "open -a Skim" YaTeX-parent-file)))
+		 (call-interactively 'YaTeX-preview)
+		 ;;(YaTeX-preview "open -a Skim" YaTeX-parent-file)
+		 ))
              (define-key YaTeX-mode-map [?\s-B] 
                (lambda 	() (interactive)
 		 (require 'yatexprc)
