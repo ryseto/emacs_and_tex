@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-05-13 11:04:50 seto>
+;; Time-stamp: <2014-05-13 16:55:21 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -149,8 +149,9 @@
 					(point)))
 	       (setq e2 (save-excursion (re-search-forward "^\n")
 					(point)))
-	       (setq str (buffer-substring-no-properties (if (< b1 b2) b2 t b1)
-							 (if (> e1 e2) e2 t e1)))))
+	       (setq b (if (< b1 b2) b2 t b1))
+	       (setq e (if (> e1 e2) e2 t e1))))
+    (setq str (buffer-substring-no-properties b e))
     (setq str (replace-regexp-in-string "\\\\%" "percent" str))
     (setq str (replace-regexp-in-string "%[^\n]*" "" str))
     (setq str (replace-regexp-in-string "\\\\[a-zA-Z]+{" " " str))
