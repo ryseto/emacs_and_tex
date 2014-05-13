@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-05-10 12:21:24 seto>
+;; Time-stamp: <2014-05-13 11:04:50 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -136,16 +136,21 @@
   (switch-to-buffer nil))
 
 ;;; say コマンドで文を読み上げる
-(defun MyTeX-speech (b e)
+(defun MyTool-speech (b e)
   "Convert text to audible speech by /usr/bin/say of OSX."
   (interactive "r")
   (let (str)
     (if (eq mark-active 'nil)
-	(progn (setq b (save-excursion (re-search-backward "^\\ *%")
-				       (point)))
-	       (setq e (save-excursion (re-search-forward "^\\ *%")
-				       (point)))))
-    (setq str (buffer-substring-no-properties b e))
+	(progn (setq b1 (save-excursion (re-search-backward "^\\ *%")
+					(point)))
+	       (setq b2 (save-excursion (re-search-backward "^\n")
+					(point)))
+	       (setq e1 (save-excursion (re-search-forward "^\\ *%")
+					(point)))
+	       (setq e2 (save-excursion (re-search-forward "^\n")
+					(point)))
+	       (setq str (buffer-substring-no-properties (if (< b1 b2) b2 t b1)
+							 (if (> e1 e2) e2 t e1)))))
     (setq str (replace-regexp-in-string "\\\\%" "percent" str))
     (setq str (replace-regexp-in-string "%[^\n]*" "" str))
     (setq str (replace-regexp-in-string "\\\\[a-zA-Z]+{" " " str))
@@ -153,10 +158,10 @@
     (setq str (replace-regexp-in-string "\\ +" " " str))
     (message str)
     (if (eq (process-status "speech") 'run)
-	(delete-process "speech"))
-    (process-kill-without-query
-     (start-process-shell-command "speech" nil 
-				  "/usr/bin/say -r 250" (concat "\"" str "\"" )))))
+	(delete-process "speech")
+      (process-kill-without-query
+       (start-process-shell-command "speech" nil 
+				    "/usr/bin/say -r 220" (concat "\"" str "\"" ))))))
 
 
 ;;; ファイル名の補完(広瀬さん)
@@ -337,13 +342,16 @@
 (define-key global-map [?\s-Ï] 'MyTool-open-folder-in-finder) 
 (define-key global-map [?\M-\s-F] 'MyTool-open-folder-in-finder) ; option key = meta
 (define-key global-map [?\s-˙] 'ns-do-hide-others)
-(define-key global-map [?\s-r] 'MyTeX-speech)
+
+(define-key global-map [?\s-r] 'MyTool-speech)
+(define-key global-map [?\s-R] 'MyTool-speech-word)
+
 (define-key global-map (kbd "C-c w") 'MyTool-lookup-dictionary-osx)
 (define-key global-map (kbd "C-c g") 'MyTool-search-google)
 (define-key global-map (kbd "C-c G") 'MyTool-search-googlescholar)
-(define-key global-map (kbd "C-c s") 'MyTool-speech-word)
 
-(define-key global-map [?\s-r] 'MyTeX-speech)
+
+
 
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
@@ -371,7 +379,6 @@
                (lambda 	() (interactive)
 		 (require 'yatexprc)
                  (YaTeX-call-builtin-on-file "MAKEINDEX" makeindex-command)))
-	     (define-key YaTeX-mode-map [?\s-R] 'skim-forward-search)
 	     (define-key YaTeX-mode-map [?\s-J] 'MyTeX-open-item-BibDesk)
              (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
              (define-key YaTeX-mode-map "\t" 'latex-indent-command)
