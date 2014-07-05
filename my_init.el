@@ -1,6 +1,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2013-07-05 10:49:57 seto>
+;; Time-stamp: <2014-06-30 13:26:43 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Window size and position should be set up
+;;;; in local files of each machine
+;; ~/.emacs.d/init.el
+;; (when (eq window-system 'ns)
+;;  ;; window size
+;;  (setq default-frame-alist
+;;        (append
+;;;;         '((width . 100) (height . 45) (top . 0) (left . 600))
+;;         default-frame-alist))
+;;  )
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; fundamental configurations
@@ -14,7 +27,7 @@
               "/bin"
               "/usr/bin"
               "/usr/local/bin"
-              "/usr/local/texlive/2013/bin/x86_64-darwin"
+              "/usr/texbin"
               (expand-file-name "~/bin")
               (expand-file-name "~/Dropbox/bin")
               (expand-file-name "~/Dropbox/emacs_and_tex")
@@ -202,10 +215,34 @@
 ;; gnuplot mode 
 (global-set-key [(f9)] 'gnuplot-make-buffer)
 
-(setq gnuplot-program "/usr/osxws/bin/gnuplot")
+(setq gnuplot-program "/usr/local/bin/gnuplot")
 
 (add-hook 'gnuplot-mode-hook '(lambda () 
      (define-key gnuplot-mode-map [?\s-b] 'gnuplot-send-region-to-gnuplot)))
+
+;; drag & drop しても、frameを立ち上げない
+(setq ns-pop-up-frames nil)
+(global-set-key [ns-drag-file] 'ns-find-file)
+
+;; マウスで選択するとコピーする Emacs 24 ではデフォルトが nil
+(setq mouse-drag-copy-region t)
+
+(setq inhibit-startup-screen t)
+
+(when (eq window-system 'ns)
+  ;; window size
+  (setq default-frame-alist
+     (append
+      '((top . 10) (left . 600)
+	(width . 100) (height . 60))
+        default-frame-alist))
+  ;; Custom-thema
+  (load-theme 'deeper-blue t)
+  (enable-theme 'deeper-blue)
+  )
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Local Variables:

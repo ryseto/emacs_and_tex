@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-05-13 16:55:21 seto>
+;; Time-stamp: <2014-07-05 07:21:13 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -49,10 +49,9 @@
 
 ;;; シェルスクリプト SemiAutoTeX でタイプセット
 (setq tex-command "latexmk")
-;;(setq tex-command "/usr/local/texlive/2013/bin/x86_64-darwin/latexmk")
-(setq bibtex-command "semiautotex.sh -b"
-      makeindex-command "semiautotex.sh -i"
-      YaTeX-typeset-auto-rerun nil ; rerun 機能を無効
+;;(setq tex-command "/usr/texbin/ptex2pdf -l -ot '-synctex=1'")
+
+(setq YaTeX-typeset-auto-rerun nil ; rerun 機能を無効
       dvi2-command "open -a Skim" ; PDF プレビュアとして Skim.app を使う
       )
 
@@ -350,9 +349,6 @@
 (define-key global-map (kbd "C-c w") 'MyTool-lookup-dictionary-osx)
 (define-key global-map (kbd "C-c g") 'MyTool-search-google)
 (define-key global-map (kbd "C-c G") 'MyTool-search-googlescholar)
-
-
-
 
 ;;; YaTeX用キーバインドの設定
 (add-hook 'yatex-mode-hook
