@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-07-05 07:21:13 seto>
+;; Time-stamp: <2014-11-05 13:07:29 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -47,12 +47,10 @@
 (autoload 'latex-indent-region-command "~/Dropbox/emacs/latex-indent"
   "Indent each line in the region according to LaTeX block structure.")
 
-;;; シェルスクリプト SemiAutoTeX でタイプセット
-(setq tex-command "latexmk")
-;;(setq tex-command "/usr/texbin/ptex2pdf -l -ot '-synctex=1'")
-
-(setq YaTeX-typeset-auto-rerun nil ; rerun 機能を無効
+;;; latexmk を用いてタイプセット
+(setq tex-command "latexmk"
       dvi2-command "open -a Skim" ; PDF プレビュアとして Skim.app を使う
+      YaTeX-typeset-auto-rerun nil ; rerun 機能を無効
       )
 
 ;;; YaTeX カスタマイズ変数
@@ -161,7 +159,7 @@
 	(delete-process "speech")
       (process-kill-without-query
        (start-process-shell-command "speech" nil 
-				    "/usr/bin/say -r 220" (concat "\"" str "\"" ))))))
+				    "/usr/bin/say " (concat "\"" str "\"" ))))))
 
 
 ;;; ファイル名の補完(広瀬さん)
@@ -365,8 +363,9 @@
              (define-key YaTeX-mode-map [?\s-P]
                (lambda 	() (interactive)
 		 (require 'yatexprc)
-		 (call-interactively 'YaTeX-preview)
-		 ;;(YaTeX-preview "open -a Skim" YaTeX-parent-file)
+		 (YaTeX-preview "open -a Skim"
+				(concat (car (split-string YaTeX-parent-file "\\."))
+					".pdf"))
 		 ))
              (define-key YaTeX-mode-map [?\s-B] 
                (lambda 	() (interactive)
@@ -393,4 +392,9 @@
              (define-key YaTeX-mode-map [?\s-\)] 'MyTeX-speech-region)
              (define-key YaTeX-mode-map [?\s-C] 'MyTeX-open-article)
              ))
+
+(put 'TeX-master 'safe-local-variable #'stringp)
+
+
+
 
