@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-11-12 22:33:41 seto>
+;; Time-stamp: <2014-11-12 23:06:03 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -9,6 +9,7 @@
 ;;; shift + command + P            : プレビュー (C-c C-t p)
 ;;; shift + command R, C-c s       : Skim PDF カーソル位置表示
 ;;; ctrl + command + J             : 対応オブジェクトへのジャンプ (C-c C-g)
+;;; shift + command + J            : cite key から BibDesk の項目を開く
 ;;; shift + option + command + B   : BibDesk を開く
 ;;; shift + option + command + P   ; Preview.app で PDF ファイルを開く
 ;;; shift + command + H            : 入力ファイルを表示 YaTeX-display-hierarchy (C-c C-d)
