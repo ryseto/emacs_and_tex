@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-11-05 13:07:29 seto>
+;; Time-stamp: <2014-11-12 22:33:41 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -353,28 +353,26 @@
           '(lambda ()
              (turn-off-auto-fill) ; 勝手に改行しない
 	     (define-key YaTeX-mode-map [?\s-t] 
-               (lambda 	() (interactive)
-		 (require 'yatexprc)
-		 (YaTeX-typeset-buffer)))
+	       (lambda ()
+		 (interactive)
+		 (YaTeX-typeset-menu nil ?j)))
 	     (define-key YaTeX-mode-map [?\s-b] 
-               (lambda 	() (interactive)
-		 (require 'yatexprc)
-		 (YaTeX-typeset-buffer)))
-             (define-key YaTeX-mode-map [?\s-P]
-               (lambda 	() (interactive)
-		 (require 'yatexprc)
-		 (YaTeX-preview "open -a Skim"
-				(concat (car (split-string YaTeX-parent-file "\\."))
-					".pdf"))
-		 ))
-             (define-key YaTeX-mode-map [?\s-B] 
-               (lambda 	() (interactive)
-		 (require 'yatexprc)
-                 (YaTeX-call-builtin-on-file "BIBTEX" bibtex-command)))
-             (define-key YaTeX-mode-map [?\s-I]
-               (lambda 	() (interactive)
-		 (require 'yatexprc)
-                 (YaTeX-call-builtin-on-file "MAKEINDEX" makeindex-command)))
+	       (lambda ()
+		 (interactive)
+		 (YaTeX-typeset-menu nil ?j)))
+	     (define-key YaTeX-mode-map [?\s-P]
+	       (lambda (arg)
+		 (interactive "P")
+		 (let ((current-prefix-arg (not arg)))
+		   (YaTeX-typeset-menu 'dummy ?p))))
+	     (define-key YaTeX-mode-map [?\s-B] 
+	       (lambda ()
+		 (interactive)
+		 (YaTeX-typeset-menu nil ?b)))
+	     (define-key YaTeX-mode-map [?\s-I] 
+	       (lambda ()
+		 (interactive)
+		 (YaTeX-typeset-menu nil ?i)))
 	     (define-key YaTeX-mode-map [?\s-J] 'MyTeX-open-item-BibDesk)
              (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
              (define-key YaTeX-mode-map "\t" 'latex-indent-command)
@@ -393,8 +391,6 @@
              (define-key YaTeX-mode-map [?\s-C] 'MyTeX-open-article)
              ))
 
+;;; ローカル変数 TeX-master は確認せずに適用
 (put 'TeX-master 'safe-local-variable #'stringp)
-
-
-
-
+(put 'YaTeX-parent-file 'safe-local-variable #'stringp)

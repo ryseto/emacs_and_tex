@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-11-05 13:09:33 seto>
+;; Time-stamp: <2014-11-11 09:45:12 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -51,8 +51,11 @@
 ;;(setq trash-directory "~/.Trash")
 
 ;;; start emacsclient server
-(require 'server)
-(unless (server-running-p) (server-start))
+
+(if window-system
+    (progn
+      (require 'server)
+      (unless (server-running-p) (server-start))))
 
 (recentf-mode 1)
 (setq recentf-max-menu-items 10)
