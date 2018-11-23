@@ -18,13 +18,12 @@ done
 pdffile="$1"
 [ "${pdffile:0:1}" == "/" ] || file="${PWD}/${pdffile}"
 
-/usr/bin/osascript \
-    -e "set theFile to POSIX file \"${pdffile}\" as alias" \
-    -e "set thePath to POSIX path of theFile" \
-    -e "tell application \"Skim\"" \
-    -e "  if $activate then activate" \
-    -e "  set theDocs to get documents whose path is thePath" \
-    -e "  try" \
-    -e "    if (count of theDocs) > 0 then revert theDocs" \
-    -e "  end try" \
-    -e "end tell"
+exec /usr/bin/osascript << EOF
+  set theFile to POSIX file "${pdffile}" as alias
+  tell application "Skim"
+  if ${activate} then activate
+  set theDocs to get documents whose path is (get POSIX path of theFile)
+  if (count of theDocs) > 0 then revert theDocs
+  open theFile
+  end tell		   
+EOF

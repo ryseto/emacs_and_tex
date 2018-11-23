@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-11-12 23:06:03 seto>
+;; Time-stamp: <2018-11-23 09:09:43 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
@@ -15,6 +15,7 @@
 ;;; shift + command + H            : 入力ファイルを表示 YaTeX-display-hierarchy (C-c C-d)
 ;;; command + 1                    : メインファイルのバッファを開く (C-c ^)
 ;;; command + 2                    : 1つ前のバッファを開く
+;;; command + i                    : 強制ハイライト(YaTeX-font-lock-fontify-environment)
 ;;; Tab                            : インデント (latex-indent)
 ;;; C-c Tab                        : 領域をインデント (latex-indent)
 ;;; C-c d                          : latexmk -c を実行
@@ -30,7 +31,7 @@
 ;;; option + command + H           : 実行されているその他すべてのアプリケーションのウインドウを隠す
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq load-path (cons (expand-file-name "~/Dropbox/emacs/yatex") load-path))
+(setq load-path (cons (expand-file-name "~/Documents/emacs/yatex") load-path))
 
 (autoload 'yatex-mode "yatex" "Yet Another LaTeX mode" t)
 (setq auto-mode-alist
@@ -43,14 +44,31 @@
 
 ;;; インデント (YaTeXのインデントを使わない）
 ;;; http://www.hit.ac.jp/~wachi/misc/latexindent.html
-(autoload 'latex-indent-command "~/Dropbox/emacs/latex-indent"
+(autoload 'latex-indent-command "~/Documents/emacs/latex-indent"
   "Indent current line accroding to LaTeX block structure.")
-(autoload 'latex-indent-region-command "~/Dropbox/emacs/latex-indent"
+(autoload 'latex-indent-region-command "~/Documents/emacs/latex-indent"
   "Indent each line in the region according to LaTeX block structure.")
 
+;;; font-latex で色付け
+;;(setq load-path (cons (expand-file-name "/usr/local/share/emacs/site-lisp/auctex") load-path))
+;;(add-to-list 'load-path "/usr/local/share/emacs/site-lisp")
+;;(require 'tex-site)
+;;(setq YaTeX-use-hilit19 nil)
+;;(setq YaTeX-use-font-lock nil)
+;;(add-hook 'yatex-mode-hook
+;;	  '(lambda () (require 'font-latex)
+;;	     (font-latex-setup)))
+;;(setq font-latex-match-reference-keywords
+;;      '(
+;;        ("citep" "*[[{")
+;;	("citet" "*[[{")
+;;	))
+
+
 ;;; latexmk を用いてタイプセット
-(setq tex-command "latexmk"
+(setq tex-command "~/Documents/bin/my_typesetter"
       dvi2-command "open -a Skim" ; PDF プレビュアとして Skim.app を使う
+      tex-pdfview-command "open -a Skim" ; PDF プレビュアとして Skim.app を使う
       YaTeX-typeset-auto-rerun nil ; rerun 機能を無効
       )
 
@@ -61,7 +79,7 @@
       YaTeX-default-pop-window-height 7 ; タイプセットの時のウィンドウの高さ
       YaTeX-skip-default-reader  t ; 補完入力でミニバッファから入力しない
       YaTeX-latex-message-code 'utf-8
-      YaTeX-template-file "~/Dropbox/emacs_and_tex/template.tex" ; 新規作成時のテンプレート
+      YaTeX-template-file "~/Documents/emacs_and_tex/template.tex" ; 新規作成時のテンプレート
       YaTeX::ref-labeling-section-level 4 ; ref 補完で subsubsection までリストアップ
       )
 
@@ -80,10 +98,10 @@
 ;;; この機能を使うためには、
 ;;; pdflatex/platex にオプション -synctex=1 が必要
 ;;;
-;;; Thanks to Tsuchiya-san's corrections (yatex ML [yatex:04810,04811])
+;;; Tsuchiya-san's corrections (yatex ML [yatex:04810,04811])
 (defun skim-forward-search ()
   (interactive)
-  (process-kill-without-query
+  (process-query-on-exit-flag ;;;; process-kill-without-query (obsolete)
    (start-process  
     "displayline"
     nil
@@ -291,7 +309,7 @@
 	 (e (save-excursion
 	      (skip-chars-forward "^},")
 	      (point)))
-	 (pdfdir "~/Documents/Dropbox/Papers/pdf/")
+	 (pdfdir "~/Library/Mobile Documents/3L68KQB4HG~com~readdle~CommonDocuments/Documents/pdf/")
 	 (pdffile (concat pdfdir
 			  (buffer-substring-no-properties s e) ".pdf"))
 	 (process-kill-without-query
@@ -332,6 +350,18 @@
 	(process-kill-without-query
 	 (start-process-shell-command "speech" nil
 				      "/usr/bin/say" (concat "\"" s "\"" )))))))
+
+;;; 親ファイルを設定する
+(defun MyTeX-set-masterfile()
+  (interactive)
+  (save-excursion
+    ;; (1) 親ファイルを開く
+    ;; (2) n 番目に include/input されているファイルを開く
+    ;; (3.1) %#! がなければ %#!my_typesetter ``YaTeX-parent-file'' を挿入
+    ;; (3.2) %#! があれば %#!my_typesetter ``YaTeX-parent-file'' と書き換える
+    ;; (4) 
+    )
+  )
 
 
 ;;; グローバルなキーバインドの設定
@@ -376,6 +406,8 @@
 		 (YaTeX-typeset-menu nil ?i)))
 	     (define-key YaTeX-mode-map [?\s-J] 'MyTeX-open-item-BibDesk)
              (define-key YaTeX-mode-map (kbd "C-c s") 'skim-forward-search)
+    	     ;;; command + i : 強制ハイライト
+             (define-key YaTeX-mode-map [?\s-i] 'YaTeX-font-lock-fontify-environment)
              (define-key YaTeX-mode-map "\t" 'latex-indent-command)
              (define-key YaTeX-mode-map (kbd "C-c TAB") 'latex-indent-region-command)
              (define-key YaTeX-mode-map [?\s-_] 'MyTeX-insert-subscript_rm)

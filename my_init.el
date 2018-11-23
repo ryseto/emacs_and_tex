@@ -1,5 +1,5 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2014-11-11 09:45:12 seto>
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Time-stamp: <2018-11-23 09:08:08 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -27,16 +27,18 @@
               "/bin"
               "/usr/bin"
               "/usr/local/bin"
-              "/usr/texbin"
+	      "/opt/local/bin"
+              "/Library/TeX/texbin"	   
               (expand-file-name "~/bin")
-              (expand-file-name "~/Dropbox/bin")
-              (expand-file-name "~/Dropbox/emacs_and_tex")
+              (expand-file-name "~/Documents/bin")
+              (expand-file-name "~/Documents/emacs_and_tex")
               ))
   (when (and (file-exists-p dir) (not (member dir exec-path)))
     (setenv "PATH" (concat dir ":" (getenv "PATH")))
     (setq exec-path (append (list dir) exec-path))))
 
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/")
+(add-to-list 'load-path "/Users/seto/Documents/emacs/gnuplot-mode/")
 
 ;;; save the position before you editing.
 (require 'saveplace)
@@ -142,45 +144,75 @@
 ;;;; Cocoa Emacs window mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(when window-system
-    ;;;; Font setting
-    ;;; if display-height is less than 900, set font size 12pt.
-  (let* ((size (if (< (display-pixel-height) 900) 12 14))
-         (asciifont "Menlo")
-         (jpfont "Hiragino Maru Gothic ProN")
-         (h (* size 10))
-         (fontspec (font-spec :family asciifont))
-         (jp-fontspec (font-spec :family jpfont)))
-    (set-face-attribute 'default nil :family asciifont :height h)
-    (set-fontset-font nil 'japanese-jisx0213.2004-1 jp-fontspec)
-    (set-fontset-font nil 'japanese-jisx0213-2 jp-fontspec)
-    (set-fontset-font nil 'katakana-jisx0201 jp-fontspec) ; half-width KaTaKaNa
-    (set-fontset-font nil '(#x0080 . #x024F) fontspec) ; Accented Latin
-    (set-fontset-font nil '(#x0370 . #x03FF) fontspec) ; Greek
-    )
-  (setq face-font-rescale-alist
-        '(("^-apple-hiragino.*" . 1.2)
-          (".*courier-bold-.*-mac-roman" . 1.0)
-          (".*monaco cy-bold-.*-mac-cyrillic" . 0.9)
-          (".*monaco-bold-.*-mac-roman" . 0.9)
-          ("-cdac$" . 1.3))))
+;;(when window-system
+;;    ;;;; Font setting
+;;    ;;; if display-height is less than 900, set font size 12pt.
+;;  (let* ((size (if (< (display-pixel-height) 900) 12 14))
+;;         (asciifont "Monaco")
+;;         (jpfont "Hiragino Maru Gothic ProN")
+;;         (h (* size 10))
+;;n         ;;(fontspec (font-spec :family asciifont))
+;;         ;;(jp-fontspec (font-spec :family jpfont))
+;;	 )
+;;    (set-face-attribute 'default nil :family asciifont :height h)
+;;    (set-fontset-font nil 'katakana-jisx0201 jpfont)
+;;    (set-fontset-font nil 'japanese-jisx0208 jpfont)
+;;    (set-fontset-font nil 'japanese-jisx0212 jpfont)
+;;    (set-fontset-font nil 'japanese-jisx0213-1 jpfont)
+;;    (set-fontset-font nil 'japanese-jisx0213-2 jpfont)
+;;;;    (set-fontset-font t 'japanese-jisx0213.2004-1 jpfont)
+;;;;    (set-fontset-font t 'japanese-jisx0213-2 jpfont)
+;;;;    (set-fontset-font t 'katakana-jisx0201 jpfontc) ; half-width KaTaKaNa
+;;    (set-fontset-font nil '(#x0080 . #x024F) asciifont) ; Accented Latin
+;;    (set-fontset-font nil '(#x0370 . #x03FF) asciifont) ; Greek
+;;    )
+;;  (setq face-font-rescale-alist
+;;        '(("^-apple-hiragino.*" . 1.2)
+;;          (".*courier-bold-.*-mac-roman" . 1.0)
+;;          (".*monaco cy-bold-.*-mac-cyrillic" . 0.9)
+;;          (".*monaco-bold-.*-mac-roman" . 0.9)
+;;          ("-cdac$" . 1.3))))
+
+;;(when window-system
+;;  ;;(set-frame-font "Inconsolata 16")
+;;  ;;  (set-frame-font "Menlo 14")
+;;  (set-frame-font "Courier New 14")
+;;  (set-fontset-font (frame-parameter nil 'font)
+;;                    'unicode
+;;                    '("ヒラギノ角ゴ ProN" . "unicode-bmp") nil 'append)
+;;  (add-to-list 'default-frame-alist '(font . "Courier New 14"))
+;;  (setq face-font-rescale-alist
+;;        '(("^-apple-hiragino.*" . 1.2)
+;;          (".*courier-bold-.*-mac-roman" . 1.0)
+;;          (".*monaco cy-bold-.*-mac-cyrillic" . 0.9)
+;;          (".*monaco-bold-.*-mac-roman" . 0.9)
+;;          ("-cdac$" . 1.3)))
+;;)
 
 (when window-system
-  ;;(set-frame-font "Inconsolata 16")
-  ;;  (set-frame-font "Menlo 14")
-  (set-frame-font "Courier New 14")
-  (set-fontset-font (frame-parameter nil 'font)
-                    'unicode
-                    '("ヒラギノ角ゴ ProN" . "unicode-bmp") nil 'append)
-  (add-to-list 'default-frame-alist '(font . "Courier New 14"))
+  (let* ((size 14)
+	 (jpfont "Hiragino Maru Gothic ProN")
+	 (asciifont "Courier New")
+	 (h (* size 10)))
+    (set-face-attribute 'default nil :family asciifont :height h)
+    (set-fontset-font t 'katakana-jisx0201 jpfont)
+    (set-fontset-font t 'japanese-jisx0208 jpfont)
+    (set-fontset-font t 'japanese-jisx0212 jpfont)
+    (set-fontset-font t 'japanese-jisx0213-1 jpfont)
+    (set-fontset-font t 'japanese-jisx0213-2 jpfont)
+    (set-fontset-font t '(#x0080 . #x024F) asciifont))
   (setq face-font-rescale-alist
-        '(("^-apple-hiragino.*" . 1.2)
-          (".*courier-bold-.*-mac-roman" . 1.0)
-          (".*monaco cy-bold-.*-mac-cyrillic" . 0.9)
-          (".*monaco-bold-.*-mac-roman" . 0.9)
-          ("-cdac$" . 1.3)))
-)
-    
+	'(("^-apple-hiragino.*" . 1.2)
+	  (".*-Hiragino Maru Gothic ProN-.*" . 1.2)
+	  (".*osaka-bold.*" . 1.2)
+	  (".*osaka-medium.*" . 1.2)
+	  (".*courier-bold-.*-mac-roman" . 1.0)
+	  (".*monaco cy-bold-.*-mac-cyrillic" . 0.9)
+	  (".*monaco-bold-.*-mac-roman" . 0.9)
+	  ("-cdac$" . 1.3)))
+  ;; C-x 5 2 で新しいフレームを作ったときに同じフォントを使う
+  (setq frame-inherited-parameters '(font tool-bar-lines)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; anything else
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -197,8 +229,8 @@
     (setq write-file-functions
           (cons 'time-stamp write-file-functions)))
 
-;;; ispell のユーザー辞書を Dropbox 内に。
-(setq ispell-personal-dictionary "~/Dropbox/emacs/aspell.en.pws")
+;;; ispell のユーザー辞書
+(setq ispell-personal-dictionary "~/Documents/emacs/aspell.en.pws")
 (setq ispell-dictionary "en_US")
 
 ;;--------------------------------------------------------------------
@@ -218,6 +250,7 @@
 ;; gnuplot mode 
 (global-set-key [(f9)] 'gnuplot-make-buffer)
 
+;;(setq gnuplot-program "/opt/local/bin/gnuplot")
 (setq gnuplot-program "/usr/local/bin/gnuplot")
 
 (add-hook 'gnuplot-mode-hook '(lambda () 
@@ -234,15 +267,16 @@
 
 (when (eq window-system 'ns)
   ;; window size
-  (setq default-frame-alist
-     (append
-      '((top . 10) (left . 600)
-	(width . 100) (height . 60))
-        default-frame-alist))
+  ;;  (setq default-frame-alist
+  ;; (append
+  ;; '((top . 10) (left . 600)
+  ;;	(width . 100) (height . 60))
+  ;;      default-frame-alist))
   ;; Custom-thema
   (load-theme 'deeper-blue t)
   (enable-theme 'deeper-blue)
   )
+
 
 (setq scroll-conservatively 5)
 (setq scroll-margin 5)
