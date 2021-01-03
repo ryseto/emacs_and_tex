@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2018-11-23 09:08:08 seto>
+;; Time-stamp: <2020-06-18 09:55:22 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -39,6 +39,7 @@
 
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/")
 (add-to-list 'load-path "/Users/seto/Documents/emacs/gnuplot-mode/")
+(add-to-list 'load-path "/Users/seto/Documents/emacs/")
 
 ;;; save the position before you editing.
 (require 'saveplace)
@@ -231,7 +232,10 @@
 
 ;;; ispell のユーザー辞書
 (setq ispell-personal-dictionary "~/Documents/emacs/aspell.en.pws")
-(setq ispell-dictionary "en_US")
+;;(setq ispell-dictionary "en_US")
+
+;;(setq-default ispell-program-name "/opt/local/bin/aspell")
+
 
 ;;--------------------------------------------------------------------
 ;; Lines enabling gnuplot-mode
@@ -255,6 +259,13 @@
 
 (add-hook 'gnuplot-mode-hook '(lambda () 
      (define-key gnuplot-mode-map [?\s-b] 'gnuplot-send-region-to-gnuplot)))
+
+
+(autoload 'freefem++-mode "freefem++-mode"
+  "Major mode for editing FreeFem++ code." t)
+(add-to-list 'auto-mode-alist '("\\.edp$" . freefem++-mode))
+(add-to-list 'auto-mode-alist '("\\.idp$" . freefem++-mode))
+
 
 ;; drag & drop しても、frameを立ち上げない
 (setq ns-pop-up-frames nil)

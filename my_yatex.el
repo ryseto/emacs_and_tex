@@ -1,9 +1,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Time-stamp: <2018-11-23 09:09:43 seto>
+;; Time-stamp: <2021-01-03 09:41:57 seto>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; キーバインド
 ;;; === YaTeX ===
-;;; command + T, command + B       : タイプセット (C-c C-t j)
+;;; command + B, command + return  : タイプセット (C-c C-t j)
 ;;; shift + command + B            : タイプセット with bibtex  (C-c C-t b)
 ;;; shift + command + I            : タイプセット with makeindex (C-c C-t i)
 ;;; shift + command + P            : プレビュー (C-c C-t p)
@@ -383,11 +383,11 @@
 (add-hook 'yatex-mode-hook
           '(lambda ()
              (turn-off-auto-fill) ; 勝手に改行しない
-	     (define-key YaTeX-mode-map [?\s-t] 
+	     (define-key YaTeX-mode-map [?\s-b] 
 	       (lambda ()
 		 (interactive)
 		 (YaTeX-typeset-menu nil ?j)))
-	     (define-key YaTeX-mode-map [?\s-b] 
+	     (define-key YaTeX-mode-map (kbd "<s-return>")
 	       (lambda ()
 		 (interactive)
 		 (YaTeX-typeset-menu nil ?j)))
